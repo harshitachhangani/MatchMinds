@@ -18,7 +18,8 @@ function App() {
     const scrollTop = useRef();
 
     const saveChats = (user1, user2) => {
-        fetch("https://teammatch-backend.onrender.com/chatCRUD/saveChats", {
+       // fetch("https://teammatch-backend.onrender.com/chatCRUD/saveChats", {
+            fetch("https://localhost:5000/chatCRUD/saveChats", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -62,7 +63,8 @@ function App() {
     };
 
     const getUser = (jwt) => {
-        fetch("https://teammatch-backend.onrender.com/auth/getLoggedInUser", {
+      //  fetch("https://teammatch-backend.onrender.com/auth/getLoggedInUser", {
+        fetch("https://localhost:5000/auth/getLoggedInUser", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -86,7 +88,8 @@ function App() {
 
     const getChats = (roomCode) => {
         console.log(roomCode, "inside getChats roomcod");
-        fetch("https://teammatch-backend.onrender.com/chatCRUD/getChats/" + roomCode, {
+        //fetch("https://teammatch-backend.onrender.com/chatCRUD/getChats/" + roomCode, {
+            fetch("https://localhost:5000/chatCRUD/getChats/" + roomCode, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

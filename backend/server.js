@@ -21,6 +21,7 @@ app.use(express.json());
 
 //const cors = require('cors');
 app.use(cors({ origin: 'http://localhost:5174' }));
+app.use(cors({ origin: 'http://localhost:5173' }));
 
 
 const auth = require("./routes/auth");
