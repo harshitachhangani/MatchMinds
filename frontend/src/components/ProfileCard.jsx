@@ -5,28 +5,25 @@ import { FaLinkedin, FaGithub } from "react-icons/fa";
 import { CiTwitter } from "react-icons/ci";
 import { FiMessageCircle } from "react-icons/fi";
 
-// ... (import statements remain the same)
+const ProfileCard = ({ user, currUser }) => {
 
-const ProfileCard = ({ user,currUser }) => {
-
-    const [currSelectedUser,setCurrSelectedUser] = useState("")
-    console.log(user,"userThisss")
-    console.log(currUser,"currUserThisss")
+    const [currSelectedUser, setCurrSelectedUser] = useState("")
+    console.log(user, "userThisss")
+    console.log(currUser, "currUserThisss")
 
     const addFriend = (e) => {   
         const currElement = e.target.parentElement.parentElement.parentElement.children[0].innerText
-        console.log(currElement,"curele")
-        console.log(currUser.username,"currUser")
+        console.log(currElement, "curele")
+        console.log(currUser.username, "currUser")
 
-        //fetch('https://teammatch-backend.onrender.com/userCRUD/addFriend', {
-            fetch('http://localhost:5000/userCRUD/addFriend', {
+        fetch('http://localhost:5000/userCRUD/addFriend', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 username: currUser.username,
-                friend:currElement
+                friend: currElement
             })
         })
         .then(response => response.json())
@@ -39,7 +36,6 @@ const ProfileCard = ({ user,currUser }) => {
         });
     }
 
-
     return (
         <div className="bg-white rounded-lg p-4 shadow-lg">
             <div className="hidden">
@@ -47,15 +43,13 @@ const ProfileCard = ({ user,currUser }) => {
             </div>
             <div className="flex flex-col items-center">
                 {
-                    user.image &&
+                    user.image ?
                     <img
                         src={user.image}
                         alt="Profile"
                         className="rounded-full h-20 w-20"
                     />
-                }
-                {
-                    !user.image &&
+                    :
                     <img
                         src={ProfilePic}
                         alt="Profile"
@@ -78,15 +72,14 @@ const ProfileCard = ({ user,currUser }) => {
                 <button className="hover:bg-green-200 text-black rounded-full p-2 flex items-center" onClick={addFriend}>
                     <FiUserPlus />
                 </button>
-                <button className="hover:bg-green-200 text-black rounded-full p-2 flex items-center">
+                {/* Add LinkedIn URL in user JSON data */}
+                <a href={user.linkedinUrl} target="_blank" rel="noopener noreferrer" className="hover:bg-green-200 text-black rounded-full p-2 flex items-center">
                     <FaLinkedin />
-                </button>
-                <button className="hover:bg-green-200 text-black rounded-full p-2 flex items-center">
+                </a>
+                {/* Add GitHub URL in user JSON data */}
+                <a href={user.githubUrl} target="_blank" rel="noopener noreferrer" className="hover:bg-green-200 text-black rounded-full p-2 flex items-center">
                     <FaGithub />
-                </button>
-                <button className="hover:bg-green-200 text-black rounded-full p-2 flex items-center">
-                    <CiTwitter />
-                </button>
+                </a>
             </div>
         </div>
     );
