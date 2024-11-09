@@ -4,13 +4,15 @@ import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const [currUser, setCurrUser] = useState({});
+  const [isOpen, setIsOpen] = useState(false);
+
   const logoStyle = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height: "2rem", // Adjust the height and width according to your logo size
+    height: "2rem",
     width: "2rem",
-    animation: "rotation 1.5s linear infinite", // Adjust animation duration as needed
+    animation: "rotation 1.5s linear infinite",
   };
   const keyframes = `
     @keyframes rotation {
@@ -30,80 +32,121 @@ const Navbar = () => {
         .find((row) => row.startsWith("LOGIN_INFO"))
         .split("=")[1];
 
-      //fetch("https://teammatch-backend.onrender.com/auth/getLoggedInUser", {
-        fetch("http://localhost:5000/auth/getLoggedInUser", {
+      fetch("http://localhost:5000/auth/getLoggedInUser", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("LOGIN_INFO"))
-            .split("=")[1],
+          Authorization: jwt,
         },
       })
-        .then((res) => {
-          return res.json();
-        })
+        .then((res) => res.json())
         .then((data) => {
           setCurrUser(data.user);
-          console.log(data);
         })
-        .catch((err) => {
-          console.log(err);
-        });
+        .catch((err) => console.log(err));
     } catch (err) {
       console.log(err);
     }
   }, []);
 
-  return (
-    <div className="bg-white font-bricolage">
-      <div className="flex justify-between p-3 ">
-        <div style={logoStyle}>
-          <style>{keyframes}</style>
-          <img src={logo} alt="Logo" />
-        </div>
-        <div className="flex ">
-          <a href="/" className="ml-10 text-lg hover:text-gray-400">
-            Home
-          </a>
-          <a href="#vision" className="ml-10 text-lg hover:text-gray-400">
-            Vision
-          </a>
+  const toggleMenu = () => setIsOpen(!isOpen);
 
-          <a href="/searchUser" className="ml-10 text-lg hover:text-gray-400">
+  return (
+    <nav className="bg-[#0F172A] w-full font-bricolage">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center">
+            <style>{keyframes}</style>
+            <Link to="/" className="flex items-center">
+              <img src={logo} alt="Logo" style={logoStyle} />
+              <div className="text-white font-bold text-2xl ml-2">HackBud</div>
+            </Link>
+            <div className="hidden md:flex ml-10 space-x-4">
+              <Link to="/" className="text-gray-300 hover:underline hover:text-white px-3 py-2 rounded-md text-md font-medium">
+                Home
+              </Link>
+              <Link to="#vision" className="text-gray-300 hover:underline hover:text-white px-3 py-2 rounded-md text-md font-medium">
+                Vision
+              </Link>
+              <Link to="/searchUser" className="text-gray-300 hover:underline hover:text-white px-3 py-2 rounded-md text-md font-medium">
+                Find Teammates
+              </Link>
+              <Link to="/chats" className="text-gray-300 hover:underline hover:text-white px-3 py-2 rounded-md text-md font-medium">
+                Chat Room
+              </Link>
+              <a href="https://github.com/Devvrat1010/teamMatch-htf-4.0" className="text-gray-300 hover:underline hover:text-white px-3 py-2 rounded-md text-md font-medium">
+                Github
+              </a>
+            </div>
+          </div>
+
+          <div className="hidden md:flex items-center space-x-4">
+            {currUser.username ? (
+              <Link to="/profile" className="text-white font-semibold hover:text-gray-300">
+                {currUser.username}
+              </Link>
+            ) : (
+              <>
+                <Link to="/signup" className="text-gray-300 hover:underline hover:text-white px-3 py-2 rounded-md text-md font-medium">
+                  Sign Up
+                </Link>
+                <Link to="/login" className="text-gray-300 hover:underline hover:text-white px-3 py-2 rounded-md text-md font-medium">
+                  Log In
+                </Link>
+              </>
+            )}
+          </div>
+
+          <div className="flex md:hidden">
+            <button onClick={toggleMenu} className="text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+              {isOpen ? (
+                <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {isOpen && (
+        <div className="md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
+          <Link to="/" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+            Home
+          </Link>
+          <Link to="#vision" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+            Vision
+          </Link>
+          <Link to="/searchUser" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
             Peoples
-          </a>
-          <a href="/chats" className="ml-10 text-lg hover:text-gray-400">
+          </Link>
+          <Link to="/chats" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
             Chat Room
-          </a>
-          <a href="https://github.com/Devvrat1010/teamMatch-htf-4.0" className="ml-10 text-lg hover:text-gray-400">
+          </Link>
+          <a href="https://github.com/Devvrat1010/teamMatch-htf-4.0" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
             Github
           </a>
-        </div>
-        <div className="flex">
-          {currUser.username && (
-            <Link to="/profile" className="ml-10 text-lg hover:text-gray-400">
+          {currUser.username ? (
+            <Link to="/profile" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
               {currUser.username}
             </Link>
-          )}
-
-          {!currUser.username && (
-            <div>
-              <Link to="/signup" className="ml-10 text-lg hover:text-gray-400">
+          ) : (
+            <>
+              <Link to="/signup" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
                 Sign Up
               </Link>
-              <Link to="/login" className="ml-10 text-lg hover:text-gray-400">
+              <Link to="/login" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
                 Log In
               </Link>
-            </div>
+            </>
           )}
         </div>
-      </div>
-      <div>
-        <hr className="dark:text-black-900" />
-      </div>
-    </div>
+      )}
+    </nav>
   );
 };
 
