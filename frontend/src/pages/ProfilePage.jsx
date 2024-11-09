@@ -103,6 +103,7 @@ export default function ProfilePage() {
         username: currUser.username,
         name: hackathon.name,
         link: hackathon.website,
+        problemStatement: hackathon.problemStatement,
       }),
     })
       .then((res) => res.json())
@@ -157,40 +158,48 @@ export default function ProfilePage() {
         <div className="rounded-xl w-2/3 mx-10">
           <AddSkills user={currUser} />
           <div className="mt-4">
+    <button
+        className="bg-green-900 hover:bg-green-800 text-white rounded-lg py-2 px-4 transition-colors duration-200"
+        onClick={() => setShowForm(!showForm)}
+    >
+        New Hackathon
+    </button>
+    {showForm && (
+        <form onSubmit={handleSubmit} className="mt-4 bg-white p-4 rounded-lg shadow-lg">
+            <input
+                type="text"
+                name="name"
+                placeholder="Name"
+                value={hackathon.name}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg p-2 w-full mb-2"
+            />
+            <input
+                type="text"
+                name="website"
+                placeholder="Website"
+                value={hackathon.website}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg p-2 w-full mb-2"
+            />
+            {/* New input for Problem Statement */}
+            <textarea
+                name="problemStatement"
+                placeholder="Problem Statement"
+                value={hackathon.problemStatement}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg p-2 w-full mb-2"
+            />
             <button
-              className="bg-green-900 hover:bg-green-800 text-white rounded-lg py-2 px-4 transition-colors duration-200"
-              onClick={() => setShowForm(!showForm)}
+                type="submit"
+                className="bg-blue-600 hover:bg-blue-500 text-white rounded-lg py-2 px-4 mt-2 transition-colors duration-200"
+                onClick={createHackathon}
             >
-              New Hackathon
+                Submit Hackathon
             </button>
-            {showForm && (
-              <form onSubmit={handleSubmit} className="mt-4 bg-white p-4 rounded-lg shadow-lg">
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Name"
-                  value={hackathon.name}
-                  onChange={handleInputChange}
-                  className="border border-gray-300 rounded-lg p-2 w-full mb-2"
-                />
-                <input
-                  type="text"
-                  name="website"
-                  placeholder="Website"
-                  value={hackathon.website}
-                  onChange={handleInputChange}
-                  className="border border-gray-300 rounded-lg p-2 w-full mb-2"
-                />
-                <button
-                  type="submit"
-                  className="bg-blue-600 hover:bg-blue-500 text-white rounded-lg py-2 px-4 mt-2 transition-colors duration-200"
-                  onClick={createHackathon}
-                >
-                  Submit Hackathon
-                </button>
-              </form>
-            )}
-          </div>
+        </form>
+    )}
+</div>
 
           {edit && (
             <div className="mt-10 border border-gray-300 rounded-xl p-4 w-fit bg-white shadow-lg">
