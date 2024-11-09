@@ -2,6 +2,7 @@ import Navbar from "../components/Navbar";
 import graphiics from "../assets/landing_graphics.png";
 import { Link } from "react-router-dom";
 import Vision from "../components/Vision";
+import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
 
 const Landing = () => {
     return (
@@ -58,7 +59,31 @@ const Landing = () => {
                     </div>
                 </div>
             </section>
-            <Vision />
+            {/* <Vision /> */}
+            <footer className="bg-[#141D2C] text-gray-400 py-8 mt-auto">
+                <div className="container mx-auto px-4 text-center">
+                    <div className="flex justify-center space-x-4 mb-4">
+                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-200">
+                            <FaFacebook size={24} />
+                        </a>
+                        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-200">
+                            <FaTwitter size={24} />
+                        </a>
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-200">
+                            <FaInstagram size={24} />
+                        </a>
+                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-200">
+                            <FaLinkedin size={24} />
+                        </a>
+                    </div>
+                    <p className="text-gray-400 text-sm mb-4">
+                        <Link to="/about" className="hover:text-gray-200">About Us</Link> | 
+                        <Link to="/contact" className="hover:text-gray-200 mx-2">Contact</Link> | 
+                        <Link to="/privacy" className="hover:text-gray-200">Privacy Policy</Link>
+                    </p>
+                    <p className="text-gray-500 text-xs">&copy; {new Date().getFullYear()} MatchMaker. All rights reserved.</p>
+                </div>
+            </footer>
         </div>
     );
 };
