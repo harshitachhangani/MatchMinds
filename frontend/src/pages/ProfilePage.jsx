@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function ProfilePage() {
   const [showForm, setShowForm] = useState(false);
+  const [edit, setEdit] = useState(false); // Initialize the edit state
   const [updatedDetails, setUpdatedDetails] = useState({
     fullName: "",
     description: "",
@@ -22,15 +23,6 @@ export default function ProfilePage() {
   const [currUser, setCurrUser] = useState({});
   const navigate = useNavigate();
 
-  const handleInputChange = (event) => {
-    setHackathon({ ...hackathon, [event.target.name]: event.target.value });
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log(hackathon);
-  };
-
   useEffect(() => {
     fetch("http://localhost:5000/auth/getLoggedInUser", {
       method: "GET",
@@ -45,7 +37,6 @@ export default function ProfilePage() {
       .then((res) => res.json())
       .then((data) => {
         setCurrUser(data.user);
-        console.log(data);
       })
       .catch((err) => console.log(err));
 
@@ -53,7 +44,6 @@ export default function ProfilePage() {
   }, []);
 
   const saveDetails = () => {
-    console.log(updatedDetails, "updatedDetails");
     fetch("http://localhost:5000/userCRUD/updateUser", {
       method: "POST",
       headers: {
@@ -67,10 +57,7 @@ export default function ProfilePage() {
       }),
     })
       .then((res) => res.json())
-      .then((data) => {
-        window.location.reload();
-        console.log(data);
-      })
+      .then(() => window.location.reload())
       .catch((err) => console.log(err));
   };
 
@@ -78,22 +65,15 @@ export default function ProfilePage() {
     reader.onload = (e) => {
       setUpdatedDetails({ ...updatedDetails, image: e.target.result });
     };
-    const f = e.target.files[0];
-    reader.readAsDataURL(f);
+    reader.readAsDataURL(e.target.files[0]);
   };
 
-  const [edit, setEdit] = useState(false);
-  const editDetails = () => {
-    setEdit(!edit);
-    console.log(edit, "Edit details");
+  const handleInputChange = (event) => {
+    setHackathon({ ...hackathon, [event.target.name]: event.target.value });
   };
 
-  const logout = () => {
-    document.cookie = "LOGIN_INFO=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    navigate("/login");
-  };
-
-  const createHackathon = () => {
+  const handleSubmit = (event) => {
+    event.preventDefault();
     fetch("http://localhost:5000/hackathonsCRUD/createHackathon", {
       method: "POST",
       headers: {
@@ -107,47 +87,38 @@ export default function ProfilePage() {
       }),
     })
       .then((res) => res.json())
-      .then((data) => console.log(data))
+      .then(() => console.log("Hackathon created"))
       .catch((err) => console.log(err));
   };
 
-  return (
-    <div>
-      <Navbar />
-      <div className="flex gap-7 bg-gray-100 min-h-screen p-5">
-        <div className="bg-white p-4 rounded-xl w-1/4 flex flex-col items-center shadow-lg">
-          <div className="h-44 object-contain">
-            {currUser.image ? (
-              <img
-                src={currUser.image}
-                className="cursor-pointer rounded-full h-44 "
-                alt="Profile"
-              />
-            ) : (
-              <img
-                src={ProfilePic}
-                className="rounded-full cursor-pointer h-44"
-                alt="Profile"
-              />
-            )}
-          </div>
-          <h1 className="text-3xl font-semibold tracking-wide mt-6 text-gray-800">{currUser.fullName}</h1>
-          <p className="mt-2 text-gray-600">{currUser.email}</p>
-          {currUser.bio ? (
-            <p className="mt-2 text-gray-600">{currUser.bio}</p>
-          ) : (
-            <p className="mt-2 text-gray-400">Update Bio...</p>
-          )}
+  const logout = () => {
+    document.cookie = "LOGIN_INFO=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    navigate("/login");
+  };
 
-          <div className="mt-5">
+  return (
+    <div className="bg-[#0F172A] min-h-screen text-gray-300">
+      <Navbar />
+      <div className="flex gap-10 p-6">
+        <div className="bg-gray-800 p-6 rounded-xl w-1/4 flex flex-col items-center shadow-lg">
+          <img
+            src={currUser.image || ProfilePic}
+            className="cursor-pointer rounded-full h-44"
+            alt="Profile"
+          />
+          <h1 className="text-3xl font-semibold tracking-wide mt-6 text-white">{currUser.fullName}</h1>
+          <p className="mt-2 text-gray-400">{currUser.email}</p>
+          <p className="mt-2 text-gray-500">{currUser.bio || "Update Bio..."}</p>
+
+          <div className="mt-5 flex gap-4">
             <button
-              className="bg-green-700 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded transition-colors duration-200"
-              onClick={editDetails}
+              className="bg-green-700 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+              onClick={() => setEdit((prev) => !prev)}
             >
               {edit ? "Done" : "Edit Profile"}
             </button>
             <button
-              className="bg-red-600 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded ml-4 transition-colors duration-200"
+              className="bg-red-600 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
               onClick={logout}
             >
               Log Out
@@ -155,78 +126,46 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className="rounded-xl w-2/3 mx-10">
+        <div className="rounded-xl w-3/4 bg-gray-900 p-6 shadow-lg">
           <AddSkills user={currUser} />
-          <div className="mt-4">
-    <button
-        className="bg-green-900 hover:bg-green-800 text-white rounded-lg py-2 px-4 transition-colors duration-200"
-        onClick={() => setShowForm(!showForm)}
-    >
-        New Hackathon
-    </button>
-    {showForm && (
-        <form onSubmit={handleSubmit} className="mt-4 bg-white p-4 rounded-lg shadow-lg">
-            <input
+          <button
+            className="bg-blue-800 hover:bg-blue-700 text-white py-2 px-4 rounded-lg mt-6 transition-colors"
+            onClick={() => setShowForm(!showForm)}
+          >
+            New Hackathon
+          </button>
+          {showForm && (
+            <form onSubmit={handleSubmit} className="mt-6 bg-gray-800 p-6 rounded-lg shadow-md">
+              <input
                 type="text"
                 name="name"
-                placeholder="Name"
+                placeholder="Hackathon Name"
                 value={hackathon.name}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg p-2 w-full mb-2"
-            />
-            <input
+                className="w-full p-2 mb-3 bg-gray-700 rounded-lg placeholder-gray-400 text-gray-300"
+              />
+              <input
                 type="text"
                 name="website"
                 placeholder="Website"
                 value={hackathon.website}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg p-2 w-full mb-2"
-            />
-            {/* New input for Problem Statement */}
-            <textarea
+                className="w-full p-2 mb-3 bg-gray-700 rounded-lg placeholder-gray-400 text-gray-300"
+              />
+              <textarea
                 name="problemStatement"
                 placeholder="Problem Statement"
                 value={hackathon.problemStatement}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg p-2 w-full mb-2"
-            />
-            <button
-                type="submit"
-                className="bg-blue-600 hover:bg-blue-500 text-white rounded-lg py-2 px-4 mt-2 transition-colors duration-200"
-                onClick={createHackathon}
-            >
-                Submit Hackathon
-            </button>
-        </form>
-    )}
-</div>
-
-          {edit && (
-            <div className="mt-10 border border-gray-300 rounded-xl p-4 w-fit bg-white shadow-lg">
-              <input
-                type="text"
-                className="border border-gray-300 p-2 rounded-lg w-full mb-2"
-                placeholder="New Name..."
-                onChange={(e) => setUpdatedDetails({ ...updatedDetails, fullName: e.target.value })}
+                className="w-full p-2 mb-3 bg-gray-700 rounded-lg placeholder-gray-400 text-gray-300"
               />
-              <textarea
-                cols="30"
-                rows="5"
-                className="border border-gray-300 p-2 rounded-lg w-full mb-2"
-                placeholder="Bio"
-                onChange={(e) => setUpdatedDetails({ ...updatedDetails, description: e.target.value })}
-              ></textarea>
-              <button className="border border-gray-300 rounded-lg bg-gray-200 p-2 mb-2">
-                <input onChange={uploadImage} type="file" accept="image/*" />
-              </button>
               <button
                 type="submit"
-                className="bg-green-600 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded transition-colors duration-200"
-                onClick={saveDetails}
+                className="bg-green-700 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition-colors"
               >
-                Save
+                Submit Hackathon
               </button>
-            </div>
+            </form>
           )}
         </div>
       </div>
