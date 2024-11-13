@@ -11,7 +11,8 @@ const bodyParser = require("body-parser");
 
 mongoose.set("strictQuery", false);
 
-const dbURI = "mongodb://localhost:27017/hackbud";
+// const dbURI = "mongodb://localhost:27017/hackbud";
+const dbURI = process.env.MONGO_URI;
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());

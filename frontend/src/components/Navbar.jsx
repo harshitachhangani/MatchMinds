@@ -1,11 +1,10 @@
 import { Link } from "react-router-dom";
-import logo from "../assets/logo.png";
 import { useEffect, useState } from "react";
-import { color } from "framer-motion";
 
 const Navbar = () => {
-  const [currUser, setCurrUser] = useState({});
+  const [currUser, setCurrUser] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const logoStyle = {
     display: "flex",
@@ -16,6 +15,7 @@ const Navbar = () => {
     animation: "rotation 1.5s linear infinite",
     color: "white"
   };
+
   const keyframes = `
     @keyframes rotation {
       from {
@@ -28,30 +28,65 @@ const Navbar = () => {
   `;
 
   useEffect(() => {
-    try {
-      const jwt = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("LOGIN_INFO"))
-        .split("=")[1];
+    const fetchUser = async () => {
+      try {
+        const cookieValue = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("LOGIN_INFO"));
 
-      fetch("http://localhost:5000/auth/getLoggedInUser", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: jwt,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setCurrUser(data.user);
-        })
-        .catch((err) => console.log(err));
-    } catch (err) {
-      console.log(err);
-    }
+        if (!cookieValue) {
+          setIsLoading(false);
+          return;
+        }
+
+        const jwt = cookieValue.split("=")[1];
+
+        const response = await fetch("http://localhost:5000/auth/getLoggedInUser", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: jwt,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch user data');
+        }
+
+        const data = await response.json();
+        setCurrUser(data.user);
+      } catch (err) {
+        console.error("Error fetching user:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUser();
   }, []);
 
   const toggleMenu = () => setIsOpen(!isOpen);
+
+  const renderAuthLinks = () => {
+    if (isLoading) {
+      return <div className="text-gray-300">Loading...</div>;
+    }
+
+    return currUser?.username ? (
+      <Link to="/profile" className="text-white font-semibold hover:text-gray-300">
+        {currUser.username}
+      </Link>
+    ) : (
+      <>
+        <Link to="/signup" className="text-gray-300 hover:underline hover:text-white px-3 py-2 rounded-md text-md font-medium">
+          Sign Up
+        </Link>
+        <Link to="/login" className="text-gray-300 hover:underline hover:text-white px-3 py-2 rounded-md text-md font-medium">
+          Log In
+        </Link>
+      </>
+    );
+  };
 
   return (
     <nav className="bg-[#0F172A] w-full font-bricolage">
@@ -61,7 +96,10 @@ const Navbar = () => {
           <div className="flex items-center">
             <style>{keyframes}</style>
             <Link to="/" className="flex items-center">
-              <img src={logo} alt="Logo" style={logoStyle} />
+              <div style={logoStyle}>
+                {/* Replace with your logo component or image */}
+                <div className="w-8 h-8 bg-white rounded-full" />
+              </div>
               <div className="text-white font-bold text-2xl ml-2">MatchMinds</div>
             </Link>
             <div className="hidden md:flex ml-10 space-x-4">
@@ -82,20 +120,7 @@ const Navbar = () => {
 
           {/* Right Section: User Links */}
           <div className="hidden md:flex items-center space-x-4">
-            {currUser.username ? (
-              <Link to="/profile" className="text-white font-semibold hover:text-gray-300">
-                {currUser.username}
-              </Link>
-            ) : (
-              <>
-                <Link to="/signup" className="text-gray-300 hover:underline hover:text-white px-3 py-2 rounded-md text-md font-medium">
-                  Sign Up
-                </Link>
-                <Link to="/login" className="text-gray-300 hover:underline hover:text-white px-3 py-2 rounded-md text-md font-medium">
-                  Log In
-                </Link>
-              </>
-            )}
+            {renderAuthLinks()}
           </div>
 
           {/* Mobile Menu Button */}
@@ -130,19 +155,21 @@ const Navbar = () => {
           <Link to="/chats" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
             Chat Room
           </Link>
-          {currUser.username ? (
-            <Link to="/profile" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
-              {currUser.username}
-            </Link>
-          ) : (
-            <>
-              <Link to="/signup" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
-                Sign Up
+          {!isLoading && (
+            currUser?.username ? (
+              <Link to="/profile" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                {currUser.username}
               </Link>
-              <Link to="/login" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
-                Log In
-              </Link>
-            </>
+            ) : (
+              <>
+                <Link to="/signup" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                  Sign Up
+                </Link>
+                <Link to="/login" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                  Log In
+                </Link>
+              </>
+            )
           )}
         </div>
       )}
