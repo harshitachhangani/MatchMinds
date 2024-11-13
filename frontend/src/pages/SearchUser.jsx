@@ -80,12 +80,12 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="bg-green-100 h-screen overflow-y-scroll">
+        <div className="bg-[#0F172A] h-screen overflow-y-scroll">
             <Navbar />
             <div className="flex gap-7 h-full pb-10">
-                <div className="bg-white mt-10 ml-7 rounded-3xl w-1/3 h-full">
+                <div className="bg-[#1A2233] mt-10 ml-7 rounded-3xl w-1/3 h-full">
                     <div className="p-5">
-                        <h1 className="text-2xl font-bold tracking-wide mb-8">
+                        <h1 className="text-2xl text-white font-bold tracking-wide mb-8">
                             Hey There! Browse Your Hackathons{" "}
                         </h1>
                         {hackathons.map((hackathon, i) => (
@@ -93,7 +93,7 @@ export default function Dashboard() {
                                 key={i}
                                 className="border-2 border-green-800 rounded-xl p-2 w-full mb-2"
                             >
-                                <div className="flex justify-between items-center">
+                                <div className="flex justify-between items-center text-white">
                                     <Link to={hackathon.link} target="blank">
                                         <h3 className="hover:text-green-900">{hackathon.name}</h3>
                                     </Link>
@@ -108,17 +108,17 @@ export default function Dashboard() {
                 <div className="mt-10 rounded-xl w-full pr-10 h-5/6">
                     <div className="flex border-black rounded-2xl mb-10">
                         <input
-                            className="p-3 flex-grow border-0 outline-none"
+                            className="p-3 flex-grow border-0 outline-none bg-[#1A2233]"
                             type="text"
                             placeholder="Search for your mate"
                             onChange={searching}
                             value={searchedUser}
                         />
-                        <div className="bg-white p-3">
+                        <div className="bg-[#1A2233] text-white p-3">
                             <FiSearch size={24} />
                         </div>
                     </div>
-                    <div className="h-full grid grid-cols-3 gap-10 overflow-y-scroll">
+                    <div className=" h-full grid grid-cols-3 gap-10 overflow-y-scroll">
                         {filteredUsers.map((user, i) => (
                             user.username !== currUser.username &&
                             <ProfileCard user={user} currUser={currUser} key={i} />

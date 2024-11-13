@@ -192,4 +192,24 @@ router.patch("/deleteDuplicate", async (req, res) => {
     }
 });
 
+router.get("/getRecommendedUsers/:username", async (req, res) => {
+    try {
+        const user = await AllUsers.findOne({ username: req.params.username });
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const recommendedUsers = await AllUsers.find({
+            username: { $ne: user.username }, // Exclude the current user
+            skills: { $in: user.skills },      // Match any skill the user has
+        });
+
+        res.status(200).json(recommendedUsers);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+
 module.exports = router;

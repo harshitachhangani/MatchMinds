@@ -11,7 +11,8 @@ const Landing = () => {
             <div className="fixed w-full top-0 left-0">
                 <Navbar />
             </div>
-            <header className="bg-[#141D2C] flex-grow flex items-center justify-center mt-16 p-10">
+            
+            {/* <header className="bg-[#141D2C] flex-grow flex items-center justify-center mt-16 p-10">
                 <div className="text-center px-4">
                     <h1 className="text-4xl md:text-6xl font-bold text-white">
                         Match Your{' '}
@@ -34,15 +35,44 @@ const Landing = () => {
                         <img src={graphiics} alt="Graphics" className="w-full h-auto max-w-md mx-auto rounded-lg" />
                     </div>
                 </div>
-            </header>
+            </header> */}
+            <header className="bg-[#141D2C] flex-grow flex items-center justify-center mt-16 p-10">
+    <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-5xl">
+        {/* Image Section */}
+        <div className="md:w-1/2 p-4">
+            <img src={graphiics} alt="Graphics" className="w-full h-auto max-w-lg rounded-lg" />
+        </div>
+        
+        {/* Text Section */}
+        <div className="text-left px-4 md:w-1/2">
+            <h1 className="text-4xl md:text-6xl font-bold text-white">
+                Match Your{' '}
+                <span className="bg-clip-text text-transparent bg-gradient-to-t from-purple-400 via-pink-400 to-white rounded-lg">
+                    Dream Team
+                </span>
+            </h1>
+            <p className="mt-4 text-lg md:text-2xl text-gray-400">
+                We connect professionals to build their dream teams and accomplish projects together.
+            </p>
+            <p className="text-lg md:text-2xl text-gray-400">
+                Streamline the process of finding compatible team members and foster collaboration.
+            </p>
+            <Link to="/login">
+                <button className="mt-6 py-3 px-6 bg-violet-600 hover:bg-violet-800 text-white font-semibold rounded-xl text-lg transition duration-500 ease-in-out">
+                    Get Started
+                </button>
+            </Link>
+        </div>
+    </div>
+</header>
 
             <section className="bg-[#1A2233] p-8 md:p-12 text-white">
-                <h2 className="text-3xl md:text-5xl font-bold text-center text-white mb-6">Why Choose MatchMaker?</h2>
+                <h2 className="text-3xl md:text-5xl font-bold text-center text-white mb-6">Why Choose MatchMinds?</h2>
                 <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className="md:w-1/3 text-center">
                         <h3 className="text-2xl font-bold mb-3">Top-tier Teams</h3>
                         <p className="text-gray-300">
-                            Assemble top-tier teams with MatchMaker. Connect with experts across fields to bring your projects to life.
+                            Assemble top-tier teams with MatchMinds. Connect with experts across fields to bring your projects to life.
                         </p>
                     </div>
                     <div className="md:w-1/3 text-center">
@@ -81,7 +111,7 @@ const Landing = () => {
                         <Link to="/contact" className="hover:text-gray-200 mx-2">Contact</Link> | 
                         <Link to="/privacy" className="hover:text-gray-200">Privacy Policy</Link>
                     </p>
-                    <p className="text-gray-500 text-xs">&copy; {new Date().getFullYear()} MatchMaker. All rights reserved.</p>
+                    <p className="text-gray-500 text-xs">&copy; {new Date().getFullYear()} MatchMinds. All rights reserved.</p>
                 </div>
             </footer>
         </div>

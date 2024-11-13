@@ -37,7 +37,7 @@ const ProfileCard = ({ user, currUser }) => {
     }
 
     return (
-        <div className="bg-white rounded-lg p-4 shadow-lg">
+        <div className="bg-[#1A2233] text-white rounded-lg p-4 shadow-lg">
             <div className="hidden">
                 {user.username}
             </div>
@@ -69,15 +69,15 @@ const ProfileCard = ({ user, currUser }) => {
                 ))}
             </div>
             <div className="mt-4 flex justify-between">
-                <button className="hover:bg-green-200 text-black rounded-full p-2 flex items-center" onClick={addFriend}>
+                <button className="hover:bg-green-200 text-white rounded-full p-2 flex items-center" onClick={addFriend}>
                     <FiUserPlus />
                 </button>
                 {/* Add LinkedIn URL in user JSON data */}
-                <a href={user.linkedinUrl} target="_blank" rel="noopener noreferrer" className="hover:bg-green-200 text-black rounded-full p-2 flex items-center">
+                <a href={user.linkedinUrl} target="_blank" rel="noopener noreferrer" className="hover:bg-green-200 text-white rounded-full p-2 flex items-center">
                     <FaLinkedin />
                 </a>
                 {/* Add GitHub URL in user JSON data */}
-                <a href={user.githubUrl} target="_blank" rel="noopener noreferrer" className="hover:bg-green-200 text-black rounded-full p-2 flex items-center">
+                <a href={user.githubUrl} target="_blank" rel="noopener noreferrer" className="hover:bg-green-200 text-white rounded-full p-2 flex items-center">
                     <FaGithub />
                 </a>
             </div>

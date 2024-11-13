@@ -29,62 +29,69 @@ export default function Signup() {
   }
 
   return (
-    <div className="flex gap-10">
-      <div className="w-1/2 min-h-screen px-7 flex flex-col justify-center items-center">
-        <h1 className="text-5xl font-bold text-black-700 mb-5 tracking-wide italic ">
-          Match Maker OR What
+    <div className="min-h-screen flex bg-[#0F172A] text-gray-300">
+      <div className="w-1/2 flex flex-col justify-center items-center px-8 py-16">
+        <h1 className="text-5xl font-bold text-white mb-4 italic tracking-wide">
+          MatchMinds
         </h1>
-        <h1 className="text-5xl font-light text-black-700 mb-5 tracking-wide">
+        <h2 className="text-3xl font-light text-gray-400 tracking-wide">
           Let's find your team
-        </h1>
-        <img src={loginPic} alt="graphics" className="w-64 h-64" />
+        </h2>
+        <img src={loginPic} alt="graphics" className="w-80 mt-10" />
       </div>
+  
       <motion.div
-        className="w-1/2 bg-green-100 flex justify-center items-center"
         initial={{ x: 200, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 50 }}
+        className="w-1/2 bg-gray-800 flex justify-center items-center p-12 rounded-l-lg shadow-lg"
       >
-        <div className="flex flex-col w-1/2 -mt-8">
-          <h1 className="text-4xl font-semibold mb-5">REGISTER</h1>
+        <div className="flex flex-col w-full max-w-md">
+          <h1 className="text-4xl font-semibold mb-6 text-white">Register</h1>
           <input
             type="text"
-            placeholder="Full Name ..."
+            placeholder="Full Name"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            className="border-2 border-black rounded-xl p-2 w-full mb-5"
+            className="border-2 border-gray-600 bg-gray-700 rounded-lg p-3 w-full mb-4 text-gray-300"
           />
           <input
             type="text"
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="border-2 border-black rounded-xl p-2 w-full mb-5"
+            className="border-2 border-gray-600 bg-gray-700 rounded-lg p-3 w-full mb-4 text-gray-300"
           />
           <input
             type="text"
             placeholder="Email"
             value={email}
-            className="border-2 border-black rounded-xl p-2 w-full mb-5"
             onChange={(e) => setEmail(e.target.value)}
+            className="border-2 border-gray-600 bg-gray-700 rounded-lg p-3 w-full mb-4 text-gray-300"
           />
           <input
             type="password"
             placeholder="Password"
             value={password}
-            className="border-2 border-black rounded-xl p-2 w-full mb-5"
             onChange={(e) => setPassword(e.target.value)}
+            className="border-2 border-gray-600 bg-gray-700 rounded-lg p-3 w-full mb-6 text-gray-300"
           />
-
-          <Link to="/login">Already have an account? Login</Link>
+  
+          <p className="text-gray-400 text-sm mb-6">
+            Already have an account?{" "}
+            <Link to="/login" className="text-blue-500 hover:underline">
+              Login
+            </Link>
+          </p>
+  
           <button
             onClick={signup}
-            className="bg-black text-white p-2 rounded-full w-full mt-5"
+            className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg w-full transition-colors duration-300"
           >
             Submit
           </button>
         </div>
       </motion.div>
     </div>
-  );
+  );  
 }

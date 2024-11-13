@@ -5,6 +5,7 @@ import Dashboard from "./pages/SearchUser";
 import ProfilePage from "./pages/ProfilePage";
 import Signup from "./pages/signup";
 import Login from "./pages/login";
+import RecommendationsPage from "./pages/RecommendationsPage";
 
 function App() {
     return (
@@ -17,6 +18,7 @@ function App() {
                     <Route path="/profile" element={<ProfilePage />} />
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/login" element={<Login />}/>
+                    <Route path="/recommendations" element={<RecommendationsPage/>}/>
 
                 </Routes>
             </Router>

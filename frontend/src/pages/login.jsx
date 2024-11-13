@@ -53,7 +53,7 @@ export default function Login() {
     <div className="min-h-screen flex bg-[#0F172A] text-gray-300">
       <div className="w-1/2 flex flex-col justify-center items-center px-8 py-16">
         <h1 className="text-5xl font-bold text-white mb-4 italic tracking-wide">
-          Match Maker
+          MatchMinds
         </h1>
         <h2 className="text-3xl font-light text-gray-400 tracking-wide">
           Let's find your team
