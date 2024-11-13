@@ -1,86 +1,157 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const AddSkills = (props) => {
-    const [skill, setSkill] = useState("");
-    const [skills, setSkills] = useState([]);
-    const [showcaseSkills, setShowcaseSkills] = useState(false);
+const AddSkills = ({ user }) => {
+  const [skill, setSkill] = useState("");
+  const [skills, setSkills] = useState([]);
+  const [showcaseSkills, setShowcaseSkills] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-    const handleKeyDown = (event) => {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            if (skill && !skills.includes(skill)) {
-                setSkills([...skills, skill]);
+  useEffect(() => {
+    if (user?.skills) {
+      setSkills(user.skills);
+    }
+  }, [user]);
 
-                fetch("http://localhost:5000/userCRUD/addSkills", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: document.cookie.split("; ").find((row) => row.startsWith("LOGIN_INFO")).split("=")[1],
-                    },
-                    body: JSON.stringify({
-                        username: props.user.username,
-                        skill: skill,
-                    }),
-                })
-                    .then((res) => res.json())
-                    .then((data) => console.log(data))
-                    .catch((err) => console.log(err));
+  const handleKeyDown = async (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      if (!skill.trim()) return;
+      
+      if (skills.includes(skill.trim())) {
+        setError("This skill already exists!");
+        setTimeout(() => setError(""), 3000);
+        return;
+      }
 
-                setSkill("");
-            }
+      try {
+        setLoading(true);
+        const token = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("LOGIN_INFO"))
+          ?.split("=")[1];
+
+        const response = await fetch("http://localhost:5000/userCRUD/addSkills", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+          body: JSON.stringify({
+            username: user.username,
+            skill: skill.trim(),
+          }),
+        });
+
+        const data = await response.json();
+        if (data.error) {
+          throw new Error(data.error);
         }
-    };
 
-    const showSkills = (e) => {
-        e.preventDefault();
-        setShowcaseSkills(!showcaseSkills);
-    };
+        setSkills([...skills, skill.trim()]);
+        setSkill("");
+      } catch (err) {
+        setError(err.message || "Failed to add skill");
+        setTimeout(() => setError(""), 3000);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
 
-    const removeSkill = (skillToRemove) => {
-        setSkills(skills.filter((skill) => skill !== skillToRemove));
-    };
+  const removeSkill = async (skillToRemove) => {
+    try {
+      setLoading(true);
+      const token = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("LOGIN_INFO"))
+        ?.split("=")[1];
 
-    return (
-        <div className="bg-white p-5 rounded-lg shadow-md max-w-lg mx-auto">
-            <h2 className="text-xl font-semibold mb-4 text-gray-700">Skills</h2>
-            <div className="flex flex-wrap gap-3 mb-4">
-                {showcaseSkills ? (
-                    props.user.skills.map((skill, index) => (
-                        <div
-                            key={index}
-                            onClick={() => removeSkill(skill)}
-                            className="px-3 py-1 bg-green-100 text-green-800 font-medium rounded-full cursor-pointer hover:bg-green-200 transition duration-200"
-                        >
-                            {skill}
-                        </div>
-                    ))
-                ) : (
-                    <p className="text-gray-500 text-sm italic">Click "Show Skills" to view your skills</p>
-                )}
-            </div>
-            <form className="flex flex-col gap-4">
-                <button
-                    onClick={showSkills}
-                    className="bg-green-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-green-700 transition duration-300 focus:outline-none"
-                >
-                    {showcaseSkills ? "Hide Skills" : "Show Skills"}
-                </button>
-                <div className="flex flex-col gap-2 mt-3">
-                    <label htmlFor="skill" className="text-gray-600 font-medium">Add a Skill</label>
-                    <input
-                        type="text"
-                        id="skill"
-                        placeholder="Enter a new skill"
-                        className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-green-500 transition duration-300"
-                        value={skill}
-                        onChange={(e) => setSkill(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                    />
-                </div>
-            </form>
-            <p className="text-xs text-gray-500 mt-2">Press Enter to add the skill.</p>
+      const response = await fetch("http://localhost:5000/userCRUD/removeSkill", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+        body: JSON.stringify({
+          username: user.username,
+          skill: skillToRemove,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      setSkills(skills.filter((s) => s !== skillToRemove));
+    } catch (err) {
+      setError(err.message || "Failed to remove skill");
+      setTimeout(() => setError(""), 3000);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="bg-gray-800 p-6 rounded-xl shadow-lg mb-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-semibold text-white">Skills</h2>
+        <button
+          onClick={() => setShowcaseSkills(!showcaseSkills)}
+          className="bg-gray-700 hover:bg-gray-600 text-gray-300 py-2 px-4 rounded-lg text-sm transition-colors"
+        >
+          {showcaseSkills ? "Hide Skills" : "Show Skills"}
+        </button>
+      </div>
+
+      {error && (
+        <div className="bg-red-500/20 border border-red-500 text-red-300 px-4 py-2 rounded-lg mb-4">
+          {error}
         </div>
-    );
+      )}
+
+      {showcaseSkills && (
+        <div className="flex flex-wrap gap-2 mb-6">
+          {skills.length > 0 ? (
+            skills.map((skill, index) => (
+              <div
+                key={index}
+                className="group flex items-center gap-2 px-3 py-1.5 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors cursor-pointer"
+                onClick={() => removeSkill(skill)}
+              >
+                <span>{skill}</span>
+                <span className="text-gray-500 group-hover:text-red-400">×</span>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500 text-sm italic">No skills added yet</p>
+          )}
+        </div>
+      )}
+
+      <div className="relative">
+        <input
+          type="text"
+          placeholder="Add a new skill (press Enter to add)"
+          className="w-full bg-gray-700 text-gray-300 placeholder-gray-500 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+          value={skill}
+          onChange={(e) => setSkill(e.target.value)}
+          onKeyDown={handleKeyDown}
+          disabled={loading}
+        />
+        {loading && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+            <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-500 border-t-blue-500"></div>
+          </div>
+        )}
+      </div>
+
+      <p className="text-gray-500 text-xs mt-2">
+        Click on a skill to remove it
+      </p>
+    </div>
+  );
 };
 
 export default AddSkills;
