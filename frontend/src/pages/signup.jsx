@@ -2,6 +2,7 @@ import { useState } from "react";
 import loginPic from "../assets/signup_graphics.png";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -33,6 +34,31 @@ export default function Signup() {
       skills
     }));
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    console.log("Sending data:", formData);  // Check the form data
+  
+    try {
+      const response = await axios.post("http://localhost:5000/register", formData, {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+  
+      if (response.status === 201) {
+        navigate("/login");
+      } else {
+        alert(response.data.error || response.data.message);
+      }
+    } catch (error) {
+      console.error("Error during signup:", error);
+      alert("An error occurred during signup");
+    }
+  };
+  
+
 
   async function signup() {
     try {
@@ -164,11 +190,12 @@ export default function Signup() {
           </p>
 
           <button
-            onClick={signup}
-            className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg w-full transition-colors duration-300"
+              onClick={handleSubmit}
+              className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg w-full transition-colors duration-300"
           >
             Submit
           </button>
+  );
         </div>
       </motion.div>
     </div>
