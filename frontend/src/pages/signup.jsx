@@ -58,28 +58,26 @@ export default function Signup() {
     }
   };
   
+  // async function signup() {
+  //   try {
+  //     const response = await fetch("http://localhost:5000/auth/signup", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(formData),
+  //     });
+  //     const data = await response.json();
 
-
-  async function signup() {
-    try {
-      const response = await fetch("http://localhost:5000/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        navigate("/login");
-      } else {
-        alert(data.error || data.message);
-      }
-    } catch (error) {
-      alert("An error occurred during signup");
-    }
-  }
+  //     if (response.ok) {
+  //       navigate("/login");
+  //     } else {
+  //       alert(data.error || data.message);
+  //     }
+  //   } catch (error) {
+  //     alert("An error occurred during signup");
+  //   }
+  // }
 
   return (
     <div className="min-h-screen flex bg-[#0F172A] text-gray-300">
@@ -195,7 +193,6 @@ export default function Signup() {
           >
             Submit
           </button>
-  );
         </div>
       </motion.div>
     </div>
