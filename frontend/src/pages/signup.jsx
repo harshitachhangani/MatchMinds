@@ -2,6 +2,7 @@ import { useState } from "react";
 import loginPic from "../assets/signup_graphics.png";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -103,26 +104,49 @@ export default function Signup() {
     }));
   };
 
-  async function signup() {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    console.log("Sending data:", formData);  // Check the form data
+  
     try {
-      const response = await fetch("http://localhost:5000/auth/signup", {
-        method: "POST",
+      const response = await axios.post("http://localhost:5000/register", formData, {
         headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+          "Content-Type": "application/json"
+        }
       });
-      const data = await response.json();
-
-      if (response.ok) {
+  
+      if (response.status === 201) {
         navigate("/login");
       } else {
-        alert(data.error || data.message);
+        alert(response.data.error || response.data.message);
       }
     } catch (error) {
+      console.error("Error during signup:", error);
       alert("An error occurred during signup");
     }
-  }
+  };
+  
+  // async function signup() {
+  //   try {
+  //     const response = await fetch("http://localhost:5000/auth/signup", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(formData),
+  //     });
+  //     const data = await response.json();
+
+  //     if (response.ok) {
+  //       navigate("/login");
+  //     } else {
+  //       alert(data.error || data.message);
+  //     }
+  //   } catch (error) {
+  //     alert("An error occurred during signup");
+  //   }
+  // }
 
   return (
     <div className="min-h-screen flex bg-[#0F172A] text-gray-300">
@@ -284,8 +308,8 @@ export default function Signup() {
           </p>
 
           <button
-            onClick={signup}
-            className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg w-full transition-colors duration-300"
+              onClick={handleSubmit}
+              className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg w-full transition-colors duration-300"
           >
             Submit
           </button>
