@@ -7,57 +7,140 @@ const AddSkills = ({ user }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Sample list of skills
+  const availableSkills = [
+    "JavaScript",
+    "React",
+    "Node.js",
+    "CSS",
+    "Python",
+    "Java",
+    "C++",
+    "C#",
+    "PHP",
+    "Ruby",
+    "SQL",
+    "MongoDB",
+    "MySQL",
+    "PostgreSQL",
+    "HTML",
+    "TypeScript",
+    "Angular",
+    "Vue.js",
+    "Flutter",
+    "Kotlin",
+    "Swift",
+    "Dart",
+    "AWS",
+    "Azure",
+    "Google Cloud Platform",
+    "Docker",
+    "Kubernetes",
+    "Machine Learning",
+    "Data Science",
+    "Artificial Intelligence",
+    "DevOps",
+    "UI/UX Design",
+    "Product Design",
+    "Game Development",
+    "Cybersecurity",
+    "Blockchain",
+    "Data Engineering",
+    "Data Analysis",
+    "Web Development",
+    "Mobile Development",
+    "Backend Development",
+    "Frontend Development",
+    "Full Stack Development",
+    "Cloud Computing",
+    "Network Security",
+    "Ethical Hacking",
+    "Software Testing",
+    "Project Management",
+  ];
+
   useEffect(() => {
     if (user?.skills) {
       setSkills(user.skills);
     }
   }, [user]);
 
-  const handleKeyDown = async (event) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      if (!skill.trim()) return;
-      
-      if (skills.includes(skill.trim())) {
-        setError("This skill already exists!");
-        setTimeout(() => setError(""), 3000);
-        return;
+  const handleAddSkill = async () => {
+    if (!skill.trim()) return;
+
+    if (skills.includes(skill.trim())) {
+      setError("This skill already exists!");
+      setTimeout(() => setError(""), 3000);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const token = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("LOGIN_INFO"))
+        ?.split("=")[1];
+
+      const response = await fetch("http://localhost:5000/userCRUD/addSkills", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+        body: JSON.stringify({
+          username: user.username,
+          skill: skill.trim(),
+        }),
+      });
+
+      const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
       }
 
-      try {
-        setLoading(true);
-        const token = document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("LOGIN_INFO"))
-          ?.split("=")[1];
-
-        const response = await fetch("http://localhost:5000/userCRUD/addSkills", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-          body: JSON.stringify({
-            username: user.username,
-            skill: skill.trim(),
-          }),
-        });
-
-        const data = await response.json();
-        if (data.error) {
-          throw new Error(data.error);
-        }
-
-        setSkills([...skills, skill.trim()]);
-        setSkill("");
-      } catch (err) {
-        setError(err.message || "Failed to add skill");
-        setTimeout(() => setError(""), 3000);
-      } finally {
-        setLoading(false);
-      }
+      setSkills([...skills, skill.trim()]);
+      setSkill("");
+    } catch (err) {
+      setError(err.message || "Failed to add skill");
+      setTimeout(() => setError(""), 3000);
+    } finally {
+      setLoading(false);
     }
   };
+
+  // const removeSkill = async (skillToRemove) => {
+  //   try {
+  //     setLoading(true);
+  //     const token = document.cookie
+  //       .split("; ")
+  //       .find((row) => row.startsWith("LOGIN_INFO"))
+  //       ?.split("=")[1];
+
+  //     const response = await fetch("http://localhost:5000/userCRUD/removeSkill", {
+  //       method: "DELETE",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: token,
+  //       },
+  //       body: JSON.stringify({
+  //         username: user.username,
+  //         skill: skillToRemove,
+  //       }),
+  //     });
+
+  //     const data = await response.json();
+  //     if (data.error) {
+  //       throw new Error(data.error);
+  //     }
+
+  //     setSkills((prevSkills) => prevSkills.filter((s) => s !== skillToRemove));
+  //   } catch (err) {
+  //     setError(err.message || "Failed to remove skill");
+  //     setTimeout(() => setError(""), 3000);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const removeSkill = async (skillToRemove) => {
     try {
@@ -66,7 +149,7 @@ const AddSkills = ({ user }) => {
         .split("; ")
         .find((row) => row.startsWith("LOGIN_INFO"))
         ?.split("=")[1];
-
+  
       const response = await fetch("http://localhost:5000/userCRUD/removeSkill", {
         method: "DELETE",
         headers: {
@@ -78,13 +161,21 @@ const AddSkills = ({ user }) => {
           skill: skillToRemove,
         }),
       });
-
-      const data = await response.json();
-      if (data.error) {
+  
+      let data;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        data = await response.text(); // Handle non-JSON response gracefully
+      }
+  
+      if (data && data.error) {
         throw new Error(data.error);
       }
-
-      setSkills(skills.filter((s) => s !== skillToRemove));
+  
+      // If successful, update the skills array
+      setSkills((prevSkills) => prevSkills.filter((s) => s !== skillToRemove));
     } catch (err) {
       setError(err.message || "Failed to remove skill");
       setTimeout(() => setError(""), 3000);
@@ -131,15 +222,26 @@ const AddSkills = ({ user }) => {
       )}
 
       <div className="relative">
-        <input
-          type="text"
-          placeholder="Add a new skill (press Enter to add)"
-          className="w-full bg-gray-700 text-gray-300 placeholder-gray-500 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+        <select
           value={skill}
           onChange={(e) => setSkill(e.target.value)}
-          onKeyDown={handleKeyDown}
+          className="w-full bg-gray-700 text-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
           disabled={loading}
-        />
+        >
+          <option value="">Select a skill to add</option>
+          {availableSkills.map((availableSkill) => (
+            <option key={availableSkill} value={availableSkill}>
+              {availableSkill}
+            </option>
+          ))}
+        </select>
+        <button
+          onClick={handleAddSkill}
+          disabled={!skill || loading}
+          className="mt-2 bg-blue-600 text-white py-2 px-4 rounded-lg transition-colors hover:bg-blue-500 disabled:opacity-50"
+        >
+          Add Skill
+        </button>
         {loading && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
             <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-500 border-t-blue-500"></div>
