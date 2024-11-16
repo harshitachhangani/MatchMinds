@@ -30,6 +30,8 @@ const userCRUD = require("./routes/userCRUD");
 const hackathonsCRUD = require("./routes/hackathonsCRUD");
 const chatCRUD = require("./routes/chatCRUD");
 
+app.use('/api', require('./routes/recommendationRoutes'));
+
 app.use("/auth", auth);
 app.use("/userCRUD", userCRUD);
 app.use("/hackathonsCRUD", hackathonsCRUD);

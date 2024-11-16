@@ -1,12 +1,6 @@
-// models/users.js
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-
-const achievementSchema = new mongoose.Schema({
-    title: String,
-    year: Number,
-    category: String
-});
+const GitHubScraperBridge = require('../github_scraper_bridge');
 
 const userSchema = new mongoose.Schema({
     fullName: String,
@@ -29,14 +23,31 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    achievements: [achievementSchema],
     skills: [String],
     location: String,
     github_username: String,
-    image: String,
-    friends: [String],
-    bio: String,
-    sex: String
+    total_repositories: {
+        type: Number,
+        default: 0
+    },
+    total_contributions: {
+        type: Number,
+        default: 0
+    }
+});
+
+userSchema.pre('save', async function(next) {
+    const user = this;
+    if (user.isModified('github_username') && user.github_username) {
+        try {
+            const stats = await GitHubScraperBridge.getUserStats(user.github_username);
+            user.total_repositories = stats.total_repositories;
+            user.total_contributions = stats.total_contributions;
+        } catch (error) {
+            console.error(`Error fetching GitHub stats for user ${user.username}:`, error);
+        }
+    }
+    next();
 });
 
 userSchema.statics.login = async function(email, password) {

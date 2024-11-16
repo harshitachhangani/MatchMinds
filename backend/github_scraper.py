@@ -1,28 +1,17 @@
-import requests
-from datetime import datetime
+import os
+import sys
 import json
-from pymongo import MongoClient
-
-# MongoDB connection details
-MONGO_URI = "mongodb+srv://harshitachhangani22:8YVlqDXUnEme8f9Z@matchminds.jsl7h.mongodb.net/?retryWrites=true&w=majority&appName=matchminds"
-MONGO_DB = "mydb"
-MONGO_COLLECTION = "users"
-
-# MongoDB client
-client = MongoClient(MONGO_URI)
-db = client[MONGO_DB]
-users_collection = db[MONGO_COLLECTION]
+import requests
 
 class GitHubContributionScraper:
     def __init__(self, github_token: str = None):
         self.session = requests.Session()
-        self.github_token = github_token
-        if github_token:
+        self.github_token = github_token or os.getenv("GITHUB_ACCESS_TOKEN", "ghp_YOUR_GITHUB_TOKEN_HERE")  # Replace with your token
+        if self.github_token:
             self.session.headers.update({
-                'Authorization': f'token {github_token}',
+                'Authorization': f'token {self.github_token}',
                 'Accept': 'application/vnd.github.v3+json'
             })
-
         self.base_url = "https://api.github.com"
         self.graphql_url = "https://api.github.com/graphql"
 
@@ -30,19 +19,19 @@ class GitHubContributionScraper:
         try:
             # Get user data from REST API
             user_data = self._get_rest_api_data(username)
-            
+
             # Get contribution data from GraphQL API
             graphql_data = self._get_graphql_data(username)
-            
+
             stats = {
                 "total_repositories": user_data.get("public_repos", 0),
                 "total_contributions": graphql_data.get("contributionsCollection", {}).get("contributionCalendar", {}).get("totalContributions", 0)
             }
-            
+
             return stats
-        
+
         except Exception as e:
-            print(f"Error fetching data for {username}: {str(e)}")
+            print(f"Error fetching data for {username}: {str(e)}", file=sys.stderr)
             return {}
 
     def _get_rest_api_data(self, username: str) -> dict:
@@ -51,7 +40,7 @@ class GitHubContributionScraper:
         if response.status_code == 200:
             return response.json()
         else:
-            print(f"Failed to fetch REST API data: {response.status_code}")
+            print(f"Failed to fetch REST API data: {response.status_code}", file=sys.stderr)
             return {}
 
     def _get_graphql_data(self, username: str) -> dict:
@@ -66,40 +55,28 @@ class GitHubContributionScraper:
           }
         }
         """
-        
+
         variables = {"username": username}
-        
+
         if self.github_token:
             response = self.session.post(
                 self.graphql_url,
                 json={"query": query, "variables": variables}
             )
-            
+
             if response.status_code == 200:
                 return response.json().get("data", {}).get("user", {})
-        
+            else:
+                print(f"Failed to fetch GraphQL data: {response.status_code}", file=sys.stderr)
+
         return {}
 
-# Flask API
-from flask import Flask, request, jsonify
-from bson.json_util import dumps
-
-app = Flask(__name__)
-
-@app.route('/register', methods=['POST'])
-def register_user():
-    data = request.get_json()
-    username = data['github_username']
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print(json.dumps({"error": "Username argument required"}))
+        sys.exit(1)
     
-    # Scrape GitHub data
-    scraper = GitHubContributionScraper(github_token="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")
-    github_stats = scraper.get_user_github_stats(username)
-    
-    # Update user data in MongoDB
-    user_data = {**data, **github_stats}
-    users_collection.insert_one(user_data)
-    
-    return jsonify(user_data), 201
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    username = sys.argv[1]
+    scraper = GitHubContributionScraper()
+    stats = scraper.get_user_github_stats(username)
+    print(json.dumps(stats))
