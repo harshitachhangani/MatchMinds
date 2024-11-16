@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
 
 # MongoDB connection details
-MONGO_URI = "mongodb+srv://harshitachhangani22:8YVlqDXUnEme8f9Z@matchminds.jsl7h.mongodb.net/?retryWrites=true&w=majority&appName=matchminds"
+MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = "mydb"
 MONGO_COLLECTION = "users"
 
@@ -28,7 +28,7 @@ def register_user():
         github_username = data['github_username']
         
         # Scrape GitHub data
-        scraper = GitHubContributionScraper(github_token="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")
+        scraper = GitHubContributionScraper(github_token=os.getenv("GITHUB_ACCESS_TOKEN"))
         github_stats = scraper.get_user_github_stats(github_username)
         
         # Combine the user data and GitHub stats
