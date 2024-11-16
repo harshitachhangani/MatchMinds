@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
-import ProfileCardRecommend from "../components/ProfileCardRecommend";
 import { Loader2 } from "lucide-react";
 
 export default function RecommendationsPage() {
@@ -89,10 +88,45 @@ export default function RecommendationsPage() {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {recommendedUsers.map((rec) => (
-                            <ProfileCardRecommend 
-                                key={rec.id}
-                                user={rec}
-                            />
+                            <div key={rec.id} className="bg-[#1F2937] rounded-lg p-6">
+                                {/* Header Section */}
+                                <div className="flex justify-between mb-4">
+                                    <div>
+                                        <h3 className="text-xl font-bold">{rec.cardContent.header.username}</h3>
+                                        <p className="text-sm text-gray-400">{rec.cardContent.header.college}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-green-500 font-semibold">{rec.cardContent.header.matchScore}</p>
+                                    </div>
+                                </div>
+                                
+                                {/* Body Section */}
+                                <div className="mb-4">
+                                    <h4 className="text-lg font-semibold">Skills</h4>
+                                    <ul className="list-disc pl-5 text-gray-300">
+                                        {rec.cardContent.body.skills?.map((skill, index) => (
+                                            <li key={index}>{skill}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                <div className="mb-4">
+                                    <h4 className="text-lg font-semibold">Experience</h4>
+                                    <p className="text-gray-300">Hackathons: {rec.cardContent.body.experience?.hackathons || 0}</p>
+                                    <p className="text-gray-300">Achievements: {rec.cardContent.body.experience?.achievements || 0}</p>
+                                </div>
+                                <div className="mb-4">
+                                    <h4 className="text-lg font-semibold">GitHub Stats</h4>
+                                    <p className="text-gray-300">Repos: {rec.cardContent.body.githubStats?.repos || 0}</p>
+                                    <p className="text-gray-300">Contributions: {rec.cardContent.body.githubStats?.contributions || 0}</p>
+                                </div>
+                                
+                                {/* Footer Section */}
+                                <div className="pt-4 border-t border-gray-700">
+                                    <h5 className="text-sm text-gray-500">Similarity Metrics</h5>
+                                    <p className="text-sm text-gray-300">Skill Match: {rec.cardContent.footer.similarityMetrics?.skillMatch || 'N/A'}</p>
+                                    <p className="text-sm text-gray-300">Experience Match: {rec.cardContent.footer.similarityMetrics?.experienceMatch || 'N/A'}</p>
+                                </div>
+                            </div>
                         ))}
                     </div>
                 )}
