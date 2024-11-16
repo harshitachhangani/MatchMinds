@@ -6,7 +6,7 @@ import requests
 class GitHubContributionScraper:
     def __init__(self, github_token: str = None):
         self.session = requests.Session()
-        self.github_token = github_token or os.getenv("GITHUB_ACCESS_TOKEN", "ghp_YOUR_GITHUB_TOKEN_HERE")  # Replace with your token
+        self.github_token = github_token or os.getenv("GITHUB_ACCESS_TOKEN")  # Replace with your token
         if self.github_token:
             self.session.headers.update({
                 'Authorization': f'token {self.github_token}',
