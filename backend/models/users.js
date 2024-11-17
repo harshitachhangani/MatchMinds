@@ -33,7 +33,11 @@ const userSchema = new mongoose.Schema({
     total_contributions: {
         type: Number,
         default: 0
-    }
+    },
+    achievements: {
+        type: Number,
+        default: 0
+    },
 });
 
 userSchema.pre('save', async function(next) {
