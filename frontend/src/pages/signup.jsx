@@ -2,7 +2,7 @@ import { useState } from "react";
 import loginPic from "../assets/signup_graphics.png";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import axios from 'axios';
+import axios from "axios";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -27,15 +27,37 @@ export default function Signup() {
     }));
   };
 
-  const handleSkillsChange = (e) => {
-    const skills = e.target.value.split(',').map(skill => skill.trim());
+  const availableSkills = [
+    "JavaScript", "React", "Node.js", "CSS", "Python", "Java", "C++", "C#", "PHP", "Ruby", "SQL", "MongoDB", "MySQL", "PostgreSQL",
+    "HTML", "TypeScript", "Angular", "Vue.js", "Flutter", "Kotlin", "Swift", "Dart", "AWS", "Azure", "Google Cloud Platform", "Docker", 
+    "Kubernetes", "Machine Learning", "Data Science", "Artificial Intelligence", "DevOps", "UI/UX Design", "Product Design", "Game Development",
+    "Cybersecurity", "Blockchain", "Data Engineering", "Data Analysis", "Web Development", "Mobile Development", "Backend Development", 
+    "Frontend Development", "Full Stack Development", "Cloud Computing", "Network Security", "Ethical Hacking", "Software Testing", "Project Management"
+  ];
+
+  // Handle adding a skill
+  const handleSkillSelect = (e) => {
+    const selectedSkill = e.target.value;
+    if (selectedSkill && !formData.skills.includes(selectedSkill)) {
+      setFormData(prev => ({
+        ...prev,
+        skills: [...prev.skills, selectedSkill],
+      }));
+    }
+  };
+
+  // Handle removing a skill
+  const handleRemoveSkill = (skillToRemove) => {
     setFormData(prev => ({
       ...prev,
-      skills
+      skills: prev.skills.filter(skill => skill !== skillToRemove),
     }));
   };
 
-  async function signup() {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("Form data before submitting:", formData); // Log data before sending it
+
     try {
       const response = await axios.post("http://localhost:5000/auth/signup", formData);
 
@@ -45,9 +67,15 @@ export default function Signup() {
         alert(response.data.error || response.data.message);
       }
     } catch (error) {
-      alert("An error occurred during signup");
+      if (error.response) {
+        console.error("Error response:", error.response.data);
+        alert(error.response.data.message || "An error occurred during signup");
+      } else {
+        console.error("Error:", error);
+        alert("An error occurred during signup");
+      }
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex bg-[#0F172A] text-gray-300">
@@ -69,7 +97,7 @@ export default function Signup() {
       >
         <div className="flex flex-col w-full max-w-md">
           <h1 className="text-4xl font-semibold mb-6 text-white">Register</h1>
-          
+
           <input
             type="text"
             name="fullName"
@@ -124,13 +152,39 @@ export default function Signup() {
             className="border-2 border-gray-600 bg-gray-700 rounded-lg p-3 w-full mb-4 text-gray-300"
           />
 
-          <input
-            type="text"
-            name="skills"
-            placeholder="Skills (comma-separated)"
-            onChange={handleSkillsChange}
-            className="border-2 border-gray-600 bg-gray-700 rounded-lg p-3 w-full mb-4 text-gray-300"
-          />
+          {/* Skills Dropdown */}
+          <label className="block text-sm mb-2 text-gray-400">Skills</label>
+          <select
+            value=""
+            onChange={handleSkillSelect}
+            className="w-full bg-gray-700 text-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all mb-4"
+          >
+            <option value="" disabled>Select a skill to add</option>
+            {availableSkills.map((availableSkill) => (
+              <option key={availableSkill} value={availableSkill}>
+                {availableSkill}
+              </option>
+            ))}
+          </select>
+
+          {/* Display selected skills with remove option */}
+          <div className="flex flex-wrap gap-2 mb-4 overflow-auto max-h-32 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+            {formData.skills.map((skill, index) => (
+              <div
+                key={index}
+                className="flex items-center bg-gray-700 text-gray-300 px-3 py-1 rounded-lg"
+              >
+                <span>{skill}</span>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveSkill(skill)}
+                  className="ml-2 text-red-400 hover:text-red-500"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
 
           <input
             type="text"
@@ -158,7 +212,7 @@ export default function Signup() {
           </p>
 
           <button
-            onClick={signup}
+            onClick={handleSubmit}
             className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg w-full transition-colors duration-300"
           >
             Submit
