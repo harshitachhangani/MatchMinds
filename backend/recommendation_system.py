@@ -44,29 +44,45 @@ class TeamRecommender:
         """Calculate various similarity metrics between users."""
         try:
             # Skills similarity (Jaccard)
-            skills1 = set(filter(None, user1.get('skills', [])))  # Remove empty strings
+            skills1 = set(filter(None, user1.get('skills', [])))
             skills2 = set(filter(None, user2.get('skills', [])))
-            skill_similarity = len(skills1.intersection(skills2)) / len(skills1.union(skills2)) if skills1 or skills2 else 0
+            
+            # Calculate both similar and complementary skills
+            similar_skills = len(skills1.intersection(skills2))
+            total_skills = len(skills1.union(skills2))
+            
+            # Similar skills ratio (weighted more heavily)
+            similar_skills_ratio = similar_skills / total_skills if total_skills > 0 else 0
+            
+            # Complementary skills ratio (weighted less heavily)
+            complementary_skills = total_skills - similar_skills
+            complementary_skills_ratio = complementary_skills / total_skills if total_skills > 0 else 0
 
-            # Experience vector similarity
+            # Experience vector similarity with additional metrics
             exp_metrics = {
                 'hackathons': 'hackathons_participated',
                 'repos': 'total_repositories',
-                'contributions': 'total_contributions'
+                'contributions': 'total_contributions',
+                'achievements': 'achievements_count'
             }
             
             # Safely get numeric values
             vector1 = [self.safe_get_numeric(user1, metric) for metric in exp_metrics.values()]
             vector2 = [self.safe_get_numeric(user2, metric) for metric in exp_metrics.values()]
             
-            # Handle zero vectors
+            # Calculate repository score (normalized comparison)
+            repos1 = self.safe_get_numeric(user1, 'total_repositories')
+            repos2 = self.safe_get_numeric(user2, 'total_repositories')
+            max_repos = max(repos1, repos2)
+            repo_similarity = min(repos1, repos2) / max_repos if max_repos > 0 else 0
+
+            # Calculate experience similarity
             if all(v == 0 for v in vector1) and all(v == 0 for v in vector2):
                 exp_similarity = 0.0
             else:
                 vector1_arr = np.array(vector1).reshape(1, -1)
                 vector2_arr = np.array(vector2).reshape(1, -1)
                 
-                # Only normalize if we have non-zero values
                 if np.any(vector1_arr) or np.any(vector2_arr):
                     combined = np.vstack([vector1_arr, vector2_arr])
                     normalized = self.scaler.fit_transform(combined)
@@ -75,16 +91,32 @@ class TeamRecommender:
                 else:
                     exp_similarity = 0.0
 
+            # Calculate final scores with updated weights
+            # Skills: 50% (40% similar skills, 10% complementary skills)
+            # Experience: 50% (20% general experience, 20% repo similarity, 10% contributions/achievements)
+            skill_score = (similar_skills_ratio * 0.4) + (complementary_skills_ratio * 0.1)
+            
+            # Calculate normalized contribution and achievement scores
+            contribution_score = ((vector1[2] + vector2[2]) / 2000) * 0.05  # contributions normalized to ~2000
+            achievement_score = ((vector1[3] + vector2[3]) / 10) * 0.05     # achievements normalized to ~10
+            
+            exp_score = (exp_similarity * 0.2) + (repo_similarity * 0.2) + contribution_score + achievement_score
+
             return {
-                'skill_similarity': skill_similarity,
+                'skill_similarity': similar_skills_ratio,
+                'complementary_skills': complementary_skills_ratio,
                 'experience_similarity': exp_similarity,
-                'overall_score': (skill_similarity * 0.6) + (exp_similarity * 0.4)
+                'repo_similarity': repo_similarity,
+                'overall_score': skill_score + exp_score
             }
+            
         except Exception as e:
             self.logger.error(f"Error calculating similarities: {str(e)}")
             return {
                 'skill_similarity': 0.0,
+                'complementary_skills': 0.0,
                 'experience_similarity': 0.0,
+                'repo_similarity': 0.0,
                 'overall_score': 0.0
             }
 
@@ -99,19 +131,22 @@ class TeamRecommender:
                     "matchScore": f"{similarities['overall_score'] * 100:.1f}%"
                 },
                 "body": {
-                    "skills": list(filter(None, user.get('skills', []))),  # Remove empty strings
+                    "skills": list(filter(None, user.get('skills', []))),
                     "experience": {
                         "hackathons": self.safe_get_numeric(user, 'hackathons_participated'),
                         "githubStats": {
                             "repos": self.safe_get_numeric(user, 'total_repositories'),
-                            "contributions": self.safe_get_numeric(user, 'total_contributions')
+                            "contributions": self.safe_get_numeric(user, 'total_contributions'),
+                            "achievements": self.safe_get_numeric(user, 'achievements_count')
                         }
                     }
                 },
                 "footer": {
                     "similarityMetrics": {
                         "skillMatch": f"{similarities['skill_similarity'] * 100:.1f}%",
-                        "experienceMatch": f"{similarities['experience_similarity'] * 100:.1f}%"
+                        "complementarySkills": f"{similarities['complementary_skills'] * 100:.1f}%",
+                        "experienceMatch": f"{similarities['experience_similarity'] * 100:.1f}%",
+                        "repoMatch": f"{similarities['repo_similarity'] * 100:.1f}%"
                     }
                 }
             }
