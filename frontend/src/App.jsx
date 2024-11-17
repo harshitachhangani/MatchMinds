@@ -6,6 +6,7 @@ import ProfilePage from "./pages/ProfilePage";
 import Signup from "./pages/signup";
 import Login from "./pages/login";
 import RecommendationsPage from "./pages/RecommendationsPage";
+import PsRecommendation from "./pages/PsRecommendation";
 
 function App() {
     return (
@@ -19,6 +20,7 @@ function App() {
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/login" element={<Login />}/>
                     <Route path="/recommendations" element={<RecommendationsPage/>}/>
+                    <Route path="/statement" element={<PsRecommendation/>}/>
 
                 </Routes>
             </Router>

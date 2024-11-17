@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
 import { Loader2, Github, Award, Code, Users } from "lucide-react";
+import Navbar from "../components/Navbar";
 
 export default function RecommendationsPage() {
+    const [problemStatement, setProblemStatement] = useState("");
     const [recommendedUsers, setRecommendedUsers] = useState([]);
     const [currUser, setCurrUser] = useState({});
     const [loading, setLoading] = useState(true);
@@ -67,6 +68,13 @@ export default function RecommendationsPage() {
         fetchRecommendations();
     }, []);
 
+    const handleSearch = () => {
+        // Here you would implement the search logic based on problem statement
+        if (problemStatement.trim()) {
+            fetchRecommendations();
+        }
+    };
+
     const MetricBar = ({ percentage, color = "bg-blue-500" }) => {
         const width = parseFloat(percentage) || 0;
         return (
@@ -83,6 +91,31 @@ export default function RecommendationsPage() {
         <div className="bg-[#0F172A] text-white min-h-screen">
             <Navbar />
             <div className="container mx-auto px-4 py-8">
+                {/* Problem Statement Input */}
+                <div className="mb-8">
+                    <div className="max-w-2xl mx-auto">
+                        <label htmlFor="problemStatement" className="block text-lg mb-2">
+                            Enter Your Problem Statement
+                        </label>
+                        <div className="flex gap-4">
+                            <input
+                                id="problemStatement"
+                                type="text"
+                                value={problemStatement}
+                                onChange={(e) => setProblemStatement(e.target.value)}
+                                className="flex-1 bg-[#1F2937] border border-gray-600 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Describe the problem you're trying to solve..."
+                            />
+                            <button
+                                onClick={handleSearch}
+                                className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-semibold transition-colors"
+                            >
+                                Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <h1 className="text-2xl font-bold mb-8">Recommended Teammates</h1>
                 
                 {error ? (

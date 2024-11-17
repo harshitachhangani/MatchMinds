@@ -112,6 +112,9 @@ const Navbar = () => {
               <Link to="/recommendations" className="text-gray-300 hover:underline hover:text-white px-3 py-2 rounded-md text-md font-medium">
                 Recommended Teammates
               </Link>
+              {/* <Link to="/statement" className="text-gray-300 hover:underline hover:text-white px-3 py-2 rounded-md text-md font-medium">
+                PS Recommendation
+              </Link> */}
               <Link to="/chats" className="text-gray-300 hover:underline hover:text-white px-3 py-2 rounded-md text-md font-medium">
                 Chat Room
               </Link>
