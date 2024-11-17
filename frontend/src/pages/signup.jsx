@@ -150,6 +150,7 @@ export default function Signup() {
         <div className="flex flex-col w-full max-w-md">
           <h1 className="text-4xl font-semibold mb-6 text-white">Register</h1>
 
+          <label className="block text-sm mb-2 text-gray-400">Full Name</label>
           <input
             type="text"
             name="fullName"
@@ -159,6 +160,7 @@ export default function Signup() {
             className="border-2 border-gray-600 bg-gray-700 rounded-lg p-3 w-full mb-4 text-gray-300"
           />
 
+          <label className="block text-sm mb-2 text-gray-400">Username</label>
           <input
             type="text"
             name="username"
@@ -168,6 +170,7 @@ export default function Signup() {
             className="border-2 border-gray-600 bg-gray-700 rounded-lg p-3 w-full mb-4 text-gray-300"
           />
 
+          <label className="block text-sm mb-2 text-gray-400">Email</label>  
           <input
             type="email"
             name="email"
@@ -177,6 +180,8 @@ export default function Signup() {
             className="border-2 border-gray-600 bg-gray-700 rounded-lg p-3 w-full mb-4 text-gray-300"
           />
 
+          
+          <label className="block text-sm mb-2 text-gray-400">Password</label>
           <input
             type="password"
             name="password"
@@ -186,6 +191,7 @@ export default function Signup() {
             className="border-2 border-gray-600 bg-gray-700 rounded-lg p-3 w-full mb-4 text-gray-300"
           />
 
+          <label className="block text-sm mb-2 text-gray-400">College</label>
           <input
             type="text"
             name="college"
@@ -195,6 +201,8 @@ export default function Signup() {
             className="border-2 border-gray-600 bg-gray-700 rounded-lg p-3 w-full mb-4 text-gray-300"
           />
 
+          
+          <label className="block text-sm mb-2 text-gray-400">Number of Hackathons Participated</label>
           <input
             type="number"
             name="hackathons_participated"
@@ -238,6 +246,7 @@ export default function Signup() {
             ))}
           </div>
 
+          <label className="block text-sm mb-2 text-gray-400">Achievements (comma separated)</label>
           <textarea
             name="achievements"
             placeholder="Enter your achievements (comma-separated)"
@@ -245,7 +254,8 @@ export default function Signup() {
             onChange={handleInputChange}
             className="border-2 border-gray-600 bg-gray-700 rounded-lg p-3 w-full mb-4 text-gray-300 min-h-[100px]"
           />
-
+          
+          <label className="block text-sm mb-2 text-gray-400">Location</label>
           <input
             type="text"
             name="location"
@@ -255,6 +265,7 @@ export default function Signup() {
             className="border-2 border-gray-600 bg-gray-700 rounded-lg p-3 w-full mb-4 text-gray-300"
           />
 
+          <label className="block text-sm mb-2 text-gray-400">GitHub Username</label>
           <input
             type="text"
             name="github_username"
