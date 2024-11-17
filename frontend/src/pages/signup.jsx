@@ -16,19 +16,20 @@ export default function Signup() {
     skills: [],
     location: "",
     github_username: "",
-    achievements: 0
+    achievements: ""
   });
 
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    // Added logic for achievements input
-    if (name === "achievementsInput") {
-      const count = value.split(",").filter((achievement) => achievement.trim() !== "").length;
+
+    // Special handling for achievements
+    if (name === "achievements") {
+      const achievementCount = value.split(",").filter((ach) => ach.trim() !== "").length; // Count non-empty achievements
       setFormData((prev) => ({
         ...prev,
-        achievements: count, // Update the achievements count
+        achievements: achievementCount, // Store the numeric count
       }));
     } else {
       setFormData((prev) => ({
