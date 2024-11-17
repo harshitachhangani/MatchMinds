@@ -34,10 +34,17 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+<<<<<<< HEAD
     achievements_count: {  // New field
         type: Number,
         default: 0
     }
+=======
+    achievements: {
+        type: Number,
+        default: 0
+    },
+>>>>>>> ecd1e18a6e934b19e5f15eab0db93918bab91675
 });
 
 userSchema.pre('save', async function(next) {
