@@ -15,17 +15,27 @@ export default function Signup() {
     hackathons_participated: 0,
     skills: [],
     location: "",
-    github_username: ""
+    github_username: "",
+    achievements: 0
   });
 
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    // Added logic for achievements input
+    if (name === "achievementsInput") {
+      const count = value.split(",").filter((achievement) => achievement.trim() !== "").length;
+      setFormData((prev) => ({
+        ...prev,
+        achievements: count, // Update the achievements count
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   // Handle adding a skill
@@ -136,11 +146,22 @@ export default function Signup() {
             className="border-2 border-gray-600 bg-gray-700 rounded-lg p-3 w-full mb-4 text-gray-300"
           />
 
+          <label className="block text-sm mb-2 text-gray-400">Hackathons Participated</label>
           <input
             type="number"
             name="hackathons_participated"
             placeholder="Number of Hackathons Participated"
             value={formData.hackathons_participated}
+            onChange={handleInputChange}
+            className="border-2 border-gray-600 bg-gray-700 rounded-lg p-3 w-full mb-4 text-gray-300"
+          />
+
+
+          <label className="block text-sm mb-2 text-gray-400">Achievements (seperated by comma)</label>
+          <input
+            type="text"
+            name="achievementsInput" // Used for display purposes
+            placeholder="Achievements (comma-separated)"
             onChange={handleInputChange}
             className="border-2 border-gray-600 bg-gray-700 rounded-lg p-3 w-full mb-4 text-gray-300"
           />
