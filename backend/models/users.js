@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema({
     total_contributions: {
         type: Number,
         default: 0
+    },
+    achievements_count: {  // New field
+        type: Number,
+        default: 0
     }
 });
 

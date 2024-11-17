@@ -2,7 +2,7 @@ import { useState } from "react";
 import loginPic from "../assets/signup_graphics.png";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { availableSkills } from "../data/skills"; // Importing from the new file
+import { availableSkills } from "../data/skills";
 import axios from "axios";
 
 export default function Signup() {
@@ -15,10 +15,60 @@ export default function Signup() {
     hackathons_participated: 0,
     skills: [],
     location: "",
-    github_username: ""
+    github_username: "",
+    achievements: "" // New field for achievements
   });
 
   const navigate = useNavigate();
+
+  // Client-side validation function
+  const validateForm = () => {
+    const { username, email, password, college, github_username } = formData;
+
+    // Required fields check
+    if (!username || !email || !password || !college || !github_username) {
+      alert("Please enter all required fields");
+      return false;
+    }
+
+    // Length validations
+    if (username.length < 1 || email.length < 1 || password.length < 1) {
+      alert("Please enter all required fields");
+      return false;
+    }
+
+    if (password.length < 6) {
+      alert("Password should be at least 6 characters long");
+      return false;
+    }
+
+    // Format validations
+    if (username.includes(" ")) {
+      alert("Username should only contain alphabets, numbers and special characters like _ - .");
+      return false;
+    }
+
+    if (email.includes(" ")) {
+      alert("Invalid email address");
+      return false;
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert("Invalid email format");
+      return false;
+    }
+
+    // GitHub username validation
+    const githubUsernameRegex = /^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38}$/;
+    if (!githubUsernameRegex.test(github_username)) {
+      alert("Invalid GitHub username format");
+      return false;
+    }
+
+    return true;
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -28,7 +78,6 @@ export default function Signup() {
     }));
   };
 
-  // Handle adding a skill
   const handleSkillSelect = (e) => {
     const selectedSkill = e.target.value;
     if (selectedSkill && !formData.skills.includes(selectedSkill)) {
@@ -39,7 +88,6 @@ export default function Signup() {
     }
   };
 
-  // Handle removing a skill
   const handleRemoveSkill = (skillToRemove) => {
     setFormData(prev => ({
       ...prev,
@@ -49,23 +97,34 @@ export default function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form data before submitting:", formData);
+    
+    // Perform client-side validation first
+    if (!validateForm()) {
+      return;
+    }
 
     try {
       const response = await axios.post("http://localhost:5000/auth/signup", formData);
 
       if (response.status === 200) {
+        alert("Registration successful! Please login.");
         navigate("/login");
-      } else {
-        alert(response.data.error || response.data.message);
       }
     } catch (error) {
       if (error.response) {
-        console.error("Error response:", error.response.data);
-        alert(error.response.data.message || "An error occurred during signup");
+        // Handle specific error cases from the server
+        const errorMessage = error.response.data.error;
+        
+        if (errorMessage === "Username already exists") {
+          alert("This username is already taken. Please choose another username.");
+        } else if (errorMessage === "Email already exists") {
+          alert("An account with this email already exists. Please use a different email or login.");
+        } else {
+          // For any other server-side validation errors
+          alert(errorMessage || "An error occurred during signup");
+        }
       } else {
-        console.error("Error:", error);
-        alert("An error occurred during signup");
+        alert("Network error. Please try again later.");
       }
     }
   };
@@ -178,6 +237,14 @@ export default function Signup() {
               </div>
             ))}
           </div>
+
+          <textarea
+            name="achievements"
+            placeholder="Enter your achievements (comma-separated)"
+            value={formData.achievements}
+            onChange={handleInputChange}
+            className="border-2 border-gray-600 bg-gray-700 rounded-lg p-3 w-full mb-4 text-gray-300 min-h-[100px]"
+          />
 
           <input
             type="text"

@@ -1,4 +1,3 @@
-// routes/auth.js
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
@@ -54,7 +53,7 @@ router.post("/login", async (req, res) => {
 });
 
 const validate = async (data) => {
-  const { username, email, password, college, github_username } = data;
+  const { username, email, password, college, github_username, achievements } = data;
 
   // Required fields check
   if (!username || !email || !password || !college || !github_username) {
@@ -117,6 +116,10 @@ router.post("/signup", async (req, res) => {
     if (validation === true) {
       const hash = bcrypt.hashSync(req.body.password, saltRounds);
       
+      // Calculate achievements count from comma-separated string
+      const achievements = req.body.achievements ? req.body.achievements.split(',').map(a => a.trim()).filter(a => a.length > 0) : [];
+      const achievements_count = achievements.length;
+
       const newUser = await User.create({
         username: req.body.username,
         email: req.body.email,
@@ -127,11 +130,7 @@ router.post("/signup", async (req, res) => {
         skills: req.body.skills || [],
         location: req.body.location,
         github_username: req.body.github_username,
-        achievements: [],
-        friends: [],
-        bio: "",
-        image: "",
-        sex: ""
+        achievements_count: achievements_count
       });
 
       const token = createToken(newUser._id);
