@@ -2,6 +2,7 @@ import { useState } from "react";
 import loginPic from "../assets/signup_graphics.png";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
+import { availableSkills } from "../data/skills"; // Importing from the new file
 import axios from "axios";
 
 export default function Signup() {
@@ -27,14 +28,6 @@ export default function Signup() {
     }));
   };
 
-  const availableSkills = [
-    "JavaScript", "React", "Node.js", "CSS", "Python", "Java", "C++", "C#", "PHP", "Ruby", "SQL", "MongoDB", "MySQL", "PostgreSQL",
-    "HTML", "TypeScript", "Angular", "Vue.js", "Flutter", "Kotlin", "Swift", "Dart", "AWS", "Azure", "Google Cloud Platform", "Docker", 
-    "Kubernetes", "Machine Learning", "Data Science", "Artificial Intelligence", "DevOps", "UI/UX Design", "Product Design", "Game Development",
-    "Cybersecurity", "Blockchain", "Data Engineering", "Data Analysis", "Web Development", "Mobile Development", "Backend Development", 
-    "Frontend Development", "Full Stack Development", "Cloud Computing", "Network Security", "Ethical Hacking", "Software Testing", "Project Management"
-  ];
-
   // Handle adding a skill
   const handleSkillSelect = (e) => {
     const selectedSkill = e.target.value;
@@ -56,7 +49,7 @@ export default function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form data before submitting:", formData); // Log data before sending it
+    console.log("Form data before submitting:", formData);
 
     try {
       const response = await axios.post("http://localhost:5000/auth/signup", formData);
