@@ -16,11 +16,7 @@ export default function Signup() {
     skills: [],
     location: "",
     github_username: "",
-<<<<<<< HEAD
     achievements: "" // New field for achievements
-=======
-    achievements: ""
->>>>>>> ecd1e18a6e934b19e5f15eab0db93918bab91675
   });
 
   const navigate = useNavigate();
@@ -76,20 +72,10 @@ export default function Signup() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
-    // Special handling for achievements
-    if (name === "achievements") {
-      const achievementCount = value.split(",").filter((ach) => ach.trim() !== "").length; // Count non-empty achievements
-      setFormData((prev) => ({
-        ...prev,
-        achievements: achievementCount, // Store the numeric count
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const handleSkillSelect = (e) => {
@@ -209,22 +195,11 @@ export default function Signup() {
             className="border-2 border-gray-600 bg-gray-700 rounded-lg p-3 w-full mb-4 text-gray-300"
           />
 
-          <label className="block text-sm mb-2 text-gray-400">Hackathons Participated</label>
           <input
             type="number"
             name="hackathons_participated"
             placeholder="Number of Hackathons Participated"
             value={formData.hackathons_participated}
-            onChange={handleInputChange}
-            className="border-2 border-gray-600 bg-gray-700 rounded-lg p-3 w-full mb-4 text-gray-300"
-          />
-
-
-          <label className="block text-sm mb-2 text-gray-400">Achievements (seperated by comma)</label>
-          <input
-            type="text"
-            name="achievementsInput" // Used for display purposes
-            placeholder="Achievements (comma-separated)"
             onChange={handleInputChange}
             className="border-2 border-gray-600 bg-gray-700 rounded-lg p-3 w-full mb-4 text-gray-300"
           />
