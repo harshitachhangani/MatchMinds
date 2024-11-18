@@ -30,6 +30,9 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    friends: [String],
+    bio: String,
+    image: String, 
     total_contributions: {
         type: Number,
         default: 0

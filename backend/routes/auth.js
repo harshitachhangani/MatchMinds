@@ -130,7 +130,10 @@ router.post("/signup", async (req, res) => {
         skills: req.body.skills || [],
         location: req.body.location,
         github_username: req.body.github_username,
-        achievements_count: achievements_count
+        achievements_count: achievements_count,
+        friends: req.body.friends || [],   // Add default as an empty array
+        bio: req.body.bio || "",           // Add default as an empty string
+        image: req.body.image || ""        // Add default as an empty string
       });
 
       const token = createToken(newUser._id);
