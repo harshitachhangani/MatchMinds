@@ -90,7 +90,7 @@ const Landing = () => {
             <section className="bg-[#141D2C] py-20">
                 <div className="container mx-auto px-4">
                     <h2 className="text-4xl font-bold text-center text-white mb-16">
-                        Why Choose <span className="text-violet-400">HackBuddy</span>
+                        Why Choose <span className="text-violet-400">MatchMinds</span>
                     </h2>
                     <div className="grid md:grid-cols-3 gap-12">
                         {features.map((feature, index) => (
@@ -198,7 +198,7 @@ const Landing = () => {
                         </div>
                     </div>
                     <div className="text-center pt-8 border-t border-gray-800">
-                        <p className="text-sm">&copy; {new Date().getFullYear()} HackBuddy. All rights reserved.</p>
+                        <p className="text-sm">&copy; {new Date().getFullYear()} MatchMinds. All rights reserved.</p>
                     </div>
                 </div>
             </footer>
