@@ -4,6 +4,7 @@ import { FiUserPlus } from "react-icons/fi";
 import { FaLinkedin, FaGithub } from "react-icons/fa";
 import { CiTwitter } from "react-icons/ci";
 import { FiMessageCircle } from "react-icons/fi";
+import { FaTools, FaBriefcase } from 'react-icons/fa';
 
 const ProfileCard = ({ user, currUser }) => {
 
@@ -47,40 +48,88 @@ const ProfileCard = ({ user, currUser }) => {
                     <img
                         src={user.image}
                         alt="Profile"
-                        className="rounded-full h-20 w-20"
+                        className="rounded-full h-32 w-32"
                     />
                     :
                     <img
                         src={ProfilePic}
                         alt="Profile"
-                        className="rounded-full h-20 w-20"
+                        className="rounded-full h-32 w-32"
                     />
                 }
                 <p className="mt-2 text-xl font-bold">{user.fullName}</p>
             </div>
-            <div className="mt-4 grid grid-cols-3 gap-2">
-                {user.skills && user.skills.map((skill, index) => (
-                    <div
-                        key={index}
-                        className="border-2 border-gray-300 rounded-3xl hover:border-gray-500 text-center"
-                    >
-                        {skill && skill.length > 5 ? `${skill.substring(0, 5)}...` : skill}
+    
+            {/* Skills Section */}
+            <div className="mt-4">
+                <h4 className="text-lg font-semibold text-white mb-2 flex items-center">
+                    <FaTools className="mr-2 text-blue-400" /> Skills
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                    {user.skills && user.skills.map((skill, index) => (
+                        <span 
+                            key={index}
+                            className="bg-gray-600 text-blue-400 px-4 py-1 rounded-md text-sm hover:bg-blue-600 hover:text-white transition-all"
+                        >
+                            {skill && skill.length > 7 ? `${skill.substring(0, 7)}...` : skill}
+                        </span>
+                    ))}
+                </div>
+            </div>
+    
+            {/* Experience Section */}
+            <div className="mt-4">
+                <h4 className="text-lg font-semibold text-white mb-2 flex items-center">
+                    <FaBriefcase className="mr-2 text-blue-400" /> Experience
+                </h4>
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <p className="text-gray-400">Hackathons</p>
+                        <p className="text-white font-bold">
+                            {user.hackathons_participated}
+                        </p>
                     </div>
-                ))}
+                    <div>
+                        <p className="text-gray-400">Achievements</p>
+                        <p className="text-white font-bold">
+                            {user.achievements_count}
+                        </p>
+                    </div>
+                    {/* Add more experience sections as needed */}
+                </div>
             </div>
-            <div className="mt-4 flex justify-between">
-                <button className="hover:bg-green-200 text-white rounded-full p-2 flex items-center" onClick={addFriend}>
-                    <FiUserPlus />
+    
+            {/* GitHub Stats Section */}
+            <div className="mt-4">
+                <h4 className="text-lg font-semibold text-white mb-2 flex items-center">
+                    <FaGithub className="mr-2 text-blue-400" /> GitHub Stats
+                </h4>
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <p className="text-gray-400">Repositories</p>
+                        <p className="text-white font-bold">
+                            {user.total_repositories}
+                        </p>
+                    </div>
+                    <div>
+                        <p className="text-gray-400">Contributions</p>
+                        <p className="text-white font-bold">
+                            {user.total_contributions}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="mt-4 flex justify-evenly w-full">
+                <button className="hover:bg-blue-200 text-white rounded-full p-2 flex items-center text-lg" onClick={addFriend}>
+                    <FiUserPlus className="text-2xl" />
                 </button>
-                {/* Add LinkedIn URL in user JSON data */}
-                <a href={user.linkedinUrl} target="_blank" rel="noopener noreferrer" className="hover:bg-green-200 text-white rounded-full p-2 flex items-center">
-                    <FaLinkedin />
-                </a>
-                {/* Add GitHub URL in user JSON data */}
-                <a href={user.githubUrl} target="_blank" rel="noopener noreferrer" className="hover:bg-green-200 text-white rounded-full p-2 flex items-center">
-                    <FaGithub />
+                <a href={`https://github.com/${user.github_username}`} target="_blank" rel="noopener noreferrer" className="hover:bg-blue-200 text-white rounded-full p-2 flex items-center text-lg">
+                    <FaGithub className="text-2xl" />
                 </a>
             </div>
+
         </div>
     );
 };
