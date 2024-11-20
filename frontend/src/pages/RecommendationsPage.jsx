@@ -92,7 +92,7 @@ export default function RecommendationsPage() {
             <Navbar />
             <div className="container mx-auto px-4 py-8">
                 {/* Problem Statement Input */}
-                <div className="mb-8">
+                {/* <div className="mb-8">
                     <div className="max-w-2xl mx-auto">
                         <label htmlFor="problemStatement" className="block text-lg mb-2">
                             Enter Your Problem Statement
@@ -114,7 +114,7 @@ export default function RecommendationsPage() {
                             </button>
                         </div>
                     </div>
-                </div>
+                </div> */}
 
                 <h1 className="text-2xl font-bold mb-8">Recommended Teammates</h1>
                 

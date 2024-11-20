@@ -23,7 +23,26 @@ class TeamRecommender:
             client = MongoClient(self.mongo_uri)
             db = client.mydb
             user_id_obj = ObjectId(user_id)
-            return db.users.find_one({"_id": user_id_obj})
+            user = db.users.find_one({"_id": user_id_obj})
+            
+            # Try to load generated skills if they exist
+            try:
+                with open('generated_skills.json', 'r') as f:
+                    generated_skills = json.load(f)
+                    # Update user's skills with generated skills
+                    if generated_skills:
+                        user['skills'] = generated_skills
+                        # Update the user in database with new skills
+                        db.users.update_one(
+                            {"_id": user_id_obj},
+                            {"$set": {"skills": generated_skills}}
+                        )
+            except FileNotFoundError:
+                self.logger.info("No generated skills found, using existing skills")
+            except json.JSONDecodeError:
+                self.logger.error("Error reading generated skills")
+            
+            return user
         except Exception as e:
             self.logger.error(f"Error fetching user: {str(e)}")
             return None
@@ -92,13 +111,11 @@ class TeamRecommender:
                     exp_similarity = 0.0
 
             # Calculate final scores with updated weights
-            # Skills: 50% (40% similar skills, 10% complementary skills)
-            # Experience: 50% (20% general experience, 20% repo similarity, 10% contributions/achievements)
             skill_score = (similar_skills_ratio * 0.4) + (complementary_skills_ratio * 0.1)
             
             # Calculate normalized contribution and achievement scores
-            contribution_score = ((vector1[2] + vector2[2]) / 2000) * 0.05  # contributions normalized to ~2000
-            achievement_score = ((vector1[3] + vector2[3]) / 10) * 0.05     # achievements normalized to ~10
+            contribution_score = ((vector1[2] + vector2[2]) / 2000) * 0.05
+            achievement_score = ((vector1[3] + vector2[3]) / 10) * 0.05
             
             exp_score = (exp_similarity * 0.2) + (repo_similarity * 0.2) + contribution_score + achievement_score
 
