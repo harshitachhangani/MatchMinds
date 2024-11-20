@@ -25,22 +25,22 @@ class TeamRecommender:
             user_id_obj = ObjectId(user_id)
             user = db.users.find_one({"_id": user_id_obj})
             
-            # Try to load generated skills if they exist
-            try:
-                with open('generated_skills.json', 'r') as f:
-                    generated_skills = json.load(f)
-                    # Update user's skills with generated skills
-                    if generated_skills:
-                        user['skills'] = generated_skills
-                        # Update the user in database with new skills
-                        db.users.update_one(
-                            {"_id": user_id_obj},
-                            {"$set": {"skills": generated_skills}}
-                        )
-            except FileNotFoundError:
-                self.logger.info("No generated skills found, using existing skills")
-            except json.JSONDecodeError:
-                self.logger.error("Error reading generated skills")
+            # # Try to load generated skills if they exist
+            # try:
+            #     with open('generated_skills.json', 'r') as f:
+            #         generated_skills = json.load(f)
+            #         # Update user's skills with generated skills
+            #         if generated_skills:
+            #             user['skills'] = generated_skills
+            #             # Update the user in database with new skills
+            #             db.users.update_one(
+            #                 {"_id": user_id_obj},
+            #                 {"$set": {"skills": generated_skills}}
+            #             )
+            # except FileNotFoundError:
+            #     self.logger.info("No generated skills found, using existing skills")
+            # except json.JSONDecodeError:
+            #     self.logger.error("Error reading generated skills")
             
             return user
         except Exception as e:

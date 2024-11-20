@@ -11,36 +11,44 @@ const bodyParser = require("body-parser");
 
 mongoose.set("strictQuery", false);
 
-// const dbURI = "mongodb://localhost:27017/hackbud";
+// Database connection URL
 const dbURI = process.env.MONGO_URI;
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
-app.use(bodyParser.json({ limit: "50mb" }));
+app.use(cors()); // Enable cross-origin requests from other domains
+app.use(bodyParser.json({ limit: "50mb" })); // Increase body size limit for large payloads (useful for file uploads)
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
-app.use(express.json());
 
-//const cors = require('cors');
-app.use(cors({ origin: 'http://localhost:5174' }));
+// Define your allowed origins for CORS (i.e., React frontend on these URLs)
+app.use(cors({ origin: 'http://localhost:5174' })); 
 app.use(cors({ origin: 'http://localhost:5173' }));
 
-
+// Import routes for authentication, CRUD operations, and recommendations
 const auth = require("./routes/auth");
 const userCRUD = require("./routes/userCRUD");
 const hackathonsCRUD = require("./routes/hackathonsCRUD");
 const chatCRUD = require("./routes/chatCRUD");
 
+// Import recommendation routes to be used under the '/api' path
 app.use('/api', require('./routes/recommendationRoutes'));
+app.use('/api', require('./routes/psRoutes'));
 
+// Additional routes (e.g., authentication, user CRUD, hackathons CRUD)
 app.use("/auth", auth);
 app.use("/userCRUD", userCRUD);
 app.use("/hackathonsCRUD", hackathonsCRUD);
 app.use("/chatCRUD", chatCRUD);
 
+// Default route for root path
+app.use("/", (req, res) => {
+  res.send("Hello World");
+});
+
+// MongoDB connection and server start
 const start = async () => {
   try {
     await mongoose.connect(dbURI);
-    app.listen(5000, () => {
+    app.listen(PORT, () => {
       console.log(`Listening on port ${PORT}`);
     });
   } catch (err) {
@@ -49,8 +57,5 @@ const start = async () => {
   }
 };
 
-app.use("/", (req, res) => {
-  res.send("Hello World");
-});
-
+// Start the server
 start();
