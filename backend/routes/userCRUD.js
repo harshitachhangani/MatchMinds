@@ -231,4 +231,30 @@ router.patch("/deleteDuplicate", async (req, res) => {
   }
 });
 
+// This route is used to remove a skill from the user's skills array
+router.delete("/removeSkill", async (req, res) => {
+  try {
+    const { username, skill } = req.body;
+
+    const user = await AllUsers.findOne({ username });
+
+    if (user) {
+      // Check if the skill exists in the user's skills array
+      if (user.skills.includes(skill)) {
+        // Remove the skill
+        user.skills = user.skills.filter(s => s !== skill);
+        await user.save();
+        res.status(200).json({ message: "Skill removed" });
+      } else {
+        res.status(400).json({ error: "Skill not found" });
+      }
+    } else {
+      res.status(400).json({ error: "User not found" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "Server side error" });
+  }
+});
+
 module.exports = router;
