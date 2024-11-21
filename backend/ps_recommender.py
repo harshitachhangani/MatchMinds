@@ -9,66 +9,78 @@ import logging
 from datetime import datetime
 from typing import Dict, List, Optional
 import os
-import google.generativeai as genai
+from groq import Groq
 from dotenv import load_dotenv
 import itertools  # For generating permutations
 
 class TeamRecommender:
     def __init__(self, 
                  mongo_uri: str = os.getenv("MONGO_URI"),
-                 gemini_key: str = os.getenv("GEMINI_API_KEY")):
+                 groq_key: str = os.getenv("GROQ_API_KEY")):
         self.mongo_uri = mongo_uri
         self.scaler = StandardScaler()
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
         
-        # Initialize Gemini
-        if not gemini_key:
-            raise ValueError("GEMINI_API_KEY not found in environment variables")
-        genai.configure(api_key=gemini_key)
-        self.model = genai.GenerativeModel('gemini-1.5-flash')
+        # Initialize Groq Llama-3 client
+        if not groq_key:
+            raise ValueError("GROQ_API_KEY not found in environment variables")
+        self.groq_client = Groq(api_key=groq_key)
 
     def generate_skills(self, prob_statement: str) -> List[str]:
-        """Generate technology skills based on problem statement using Gemini."""
+        """Generate technology skills based on problem statement using Llama-3."""
         try:
             query = (f"Given the following hackathon problem statement: '{prob_statement}', "
-                    "provide a list of specific technologies in array format required to develop "
-                    "a comprehensive solution, without explanations. (Just give the required "
-                    "technologies in array format, that's it)")
+                    "provide a list of specific technologies in JSON array format required to develop "
+                    "a comprehensive solution. Provide only the array of technologies, without additional text.")
             
-            response = self.model.generate_content(query)
-            skills_text = response.text.strip()
-            skills_text = skills_text.replace('```javascript', '').replace('```', '').strip()
+            # Create chat completion
+            completion = self.groq_client.chat.completions.create(
+                model="gemma2-9b-it",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant that provides a list of specific technologies in array format ONLY."},
+                    {"role": "user", "content": query}
+                ],
+                temperature=0.7,
+                max_tokens=700,
+                top_p=1,
+            )
             
-            # Parse the JSON array
-            skills_array = json.loads(skills_text)
-            # Clean up comments and empty strings
+            # Extract response text
+            skills_text = completion.choices[0].message.content.strip()
+            
+            # Clean and parse the JSON array
+            skills_text = skills_text.replace('```json', '').replace('```', '').strip()
+            
+            try:
+                skills_array = json.loads(skills_text)
+            except json.JSONDecodeError:
+                # Fallback parsing for potential non-standard JSON
+                skills_text = skills_text.replace("'", '"')
+                skills_array = json.loads(skills_text)
+            
+            # Clean up skills
             skills = [skill.split('//')[0].strip() for skill in skills_array]
             skills = [skill for skill in skills if skill]
             
             return skills
         except Exception as e:
             self.logger.error(f"Error generating skills: {str(e)}")
-            return []
 
     def get_user_by_id(self, user_id: str, prob_statement: Optional[str] = None) -> Optional[Dict]:
-        """Fetch user from MongoDB by ID and optionally update skills based on problem statement."""
+        """Fetch user from MongoDB by ID without updating their skills in the database."""
         try:
             client = MongoClient(self.mongo_uri)
             db = client.mydb
             user_id_obj = ObjectId(user_id)
             user = db.users.find_one({"_id": user_id_obj})
             
-            # Generate and update skills if problem statement is provided
+            # Only generate skills if a problem statement is provided, 
+            # but don't store them in the database.
             if prob_statement:
                 generated_skills = self.generate_skills(prob_statement)
-                if generated_skills:
-                    user['skills'] = generated_skills
-                    # Update the user in database with new skills
-                    db.users.update_one(
-                        {"_id": user_id_obj},
-                        {"$set": {"skills": generated_skills}}
-                    )
+                # Use the generated skills temporarily without saving them to the user record
+                user['skills'] = generated_skills
             
             return user
         except Exception as e:
