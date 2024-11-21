@@ -8,52 +8,81 @@ router.get("/getChats/:roomCode", async (req, res) => {
         const chatRoom = await ChatRooms.findOne({
             roomCode: roomCode,
         });
+        
         if (chatRoom) {
             res.status(200).json(chatRoom.messages);
         } else {
-            res.status(400).json({ error: "Room not found" });
+            // Create a new chat room if it doesn't exist
+            const newChatRoom = new ChatRooms({
+                user1: roomCode.slice(0, roomCode.length / 2),
+                user2: roomCode.slice(roomCode.length / 2),
+                roomCode: roomCode,
+                messages: []
+            });
+            await newChatRoom.save();
+            res.status(200).json([]);
         }
     } catch (error) {
-        console.log(error);
-        res.status(400).json({ error: "server side error" });
+        console.error(error);
+        res.status(500).json({ error: "Server side error" });
     }
 });
 
 router.post("/getRoomCode", async (req, res) => {
     try {
-        const username = req.body.username;
-        const friend = req.body.friend;
+        const { username, friend } = req.body;
         const roomString = username < friend ? username + friend : friend + username;
-        const chatRoom = await ChatRooms.findOne({ roomCode: roomString });
-        if (chatRoom) {
-            res.status(200).json({ roomCode: chatRoom.roomCode });
-        } else {
-            res.status(400).json({ error: "Room not found" });
+        
+        let chatRoom = await ChatRooms.findOne({ roomCode: roomString });
+        
+        if (!chatRoom) {
+            // Create a new chat room if it doesn't exist
+            chatRoom = new ChatRooms({
+                user1: username,
+                user2: friend,
+                roomCode: roomString,
+                messages: []
+            });
+            await chatRoom.save();
         }
+        
+        res.status(200).json({ roomCode: roomString });
     } catch (error) {
-        console.log(error);
-        res.status(400).json({ error: "server side error" });
+        console.error(error);
+        res.status(500).json({ error: "Server side error" });
     }
 });
 
 router.post("/saveChats", async (req, res) => {
     try {
         const { user1, user2, roomCode, message } = req.body;
-        console.log(roomCode,"roomString")
-        const msg = await ChatRooms.find({roomCode : roomCode})
-        console.log(msg,"msg")
-        if (!msg) {
-            res.status(400).json({ error: "Room not found" });
-        }
-        else{
-            msg[0].messages.push({sender: user1, message: message});
-            await msg[0].save();
-            res.status(200).json({ message: "Message saved", msg : msg });
+
+        // Find or create chat room
+        let chatRoom = await ChatRooms.findOne({ roomCode });
+        
+        if (!chatRoom) {
+            chatRoom = new ChatRooms({
+                user1,
+                user2,
+                roomCode,
+                messages: []
+            });
         }
 
+        // Add message to chat room
+        chatRoom.messages.push({ 
+            sender: user1, 
+            message 
+        });
+
+        // Save updated chat room
+        await chatRoom.save();
+        
+        res.status(200).json({ message: "Message saved successfully" });
     } catch (error) {
-        console.log(error);
-        res.status(400).json({ error: "server side error" });
+        console.error("Error saving chat:", error);
+        res.status(500).json({ error: "Server error" });
     }
 });
+
 module.exports = router;

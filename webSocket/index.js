@@ -1,13 +1,18 @@
 const express = require("express");
 const http = require("http");
-const server = http.createServer(app);
-const { Server } = require("socket.io");
+const cors = require("cors");
 
 const app = express();
+app.use(cors());
+app.use(express.json());
+
+const server = http.createServer(app);
+const { Server } = require("socket.io");
 
 const io = new Server(server, {
     cors: {
         origin: "*",
+        methods: ["GET", "POST"]
     },
 });
 
@@ -24,6 +29,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("sendMessage", (data) => {
+    // Broadcast to all users in the room except the sender
     socket.to(data.roomCode).emit("recieveMessage", data);
   });
 });
@@ -31,3 +37,5 @@ io.on("connection", (socket) => {
 server.listen(3000, () => {
     console.log("Socket Server Listening PORT 3000");
 });
+
+module.exports = { io, server };

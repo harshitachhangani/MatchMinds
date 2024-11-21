@@ -1,44 +1,64 @@
 import { useState, useEffect, useRef } from "react";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { Link } from "react-router-dom";
-import Navbar from "../components/Navbar";  // Ensure the Navbar is included
-import graphiics from "../assets/login_graphics.png"; // Replace with your image
+import Navbar from "../components/Navbar";
 import io from "socket.io-client";
 
-const socket = io("https://web-socket-server-02l2.onrender.com/");
+const socket = io("https://web-socket-server-02l2.onrender.com/");  // Update socket server URL
 
 function ChatRoom() {
   const [message, setMessage] = useState("");
-  const [messageRecieved, setMessageRecieved] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const [currUser, setCurrUser] = useState({});
   const [chatFriend, setChatFriend] = useState("");
   const [chats, setChats] = useState([]);
   const [friends, setFriends] = useState([]);
   
-  const msg = useRef();
-  const scrollTop = useRef();
+  const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
 
+  // Scroll to bottom of messages
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // Fetch chat history for a specific room
+  const fetchChatHistory = async (roomCode) => {
+    try {
+      const jwt = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("LOGIN_INFO"))
+        ?.split("=")[1];
+
+      const response = await fetch(`http://localhost:5000/chat/getChats/${roomCode}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: jwt,
+        },
+      });
+
+      if (response.ok) {
+        const chatHistory = await response.json();
+        setChats(chatHistory);
+      }
+    } catch (error) {
+      console.error("Error fetching chat history:", error);
+    }
+  };
+
+  // Socket and initial setup
   useEffect(() => {
-    socket.on("recieveMessage", (data) => {
-      setMessageRecieved(data.message);
-      const container = document.createElement("div");
-      container.className = "flex justify-start max-w-4/6 ";
-      
-      const recieve = document.createElement("h1");
-      recieve.innerHTML = data.message;
-      recieve.className = "bg-[#595959] text-white p-2 rounded-xl text-wrap";
-      
-      container.appendChild(recieve);
-      msg.current.appendChild(container);
-      scrollTop.current.scrollIntoView({ behavior: "smooth" });
+    // Socket connection and room joining
+    socket.on("connect", () => {
+      console.log("Connected to socket server");
     });
-    
+
     // Get logged-in user data and friends
     const jwt = document.cookie
       .split("; ")
       .find((row) => row.startsWith("LOGIN_INFO"))
-      .split("=")[1];
+      ?.split("=")[1];
 
     fetch("http://localhost:5000/auth/getLoggedInUser", {
       method: "GET",
@@ -51,37 +71,124 @@ function ChatRoom() {
       .then((data) => {
         setCurrUser(data.user);
         setFriends(data.user.friends);
-        setChatFriend(data.user.friends[0]);
+        
+        // Set initial chat friend if friends exist
+        if (data.user.friends.length > 0) {
+          const initialFriend = data.user.friends[0];
+          setChatFriend(initialFriend);
+          
+          // Generate room code and fetch chat history
+          const roomString = 
+            data.user.username < initialFriend 
+              ? data.user.username + initialFriend 
+              : initialFriend + data.user.username;
+          
+          setRoomCode(roomString);
+          
+          // Join room and fetch chat history
+          socket.emit("joinRoom", { roomCode: roomString });
+          fetchChatHistory(roomString);
+        }
       })
       .catch((err) => {
         console.log(err);
       });
 
-  }, [socket]);
+    // Socket event listeners
+    socket.on("recieveMessage", (data) => {
+      // Add received message to chats
+      setChats(prevChats => [...prevChats, {
+        sender: data.sender,
+        message: data.message
+      }]);
+      scrollToBottom();
+    });
 
-  const sendMessage = () => {
-    socket.emit("sendMessage", { message, roomCode });
-    const container = document.createElement("div");
-    container.className = "flex justify-end w-full";
+    return () => {
+      socket.off("connect");
+      socket.off("recieveMessage");
+    };
+  }, []);
 
-    const send = document.createElement("h1");
-    send.innerHTML = message;
-    send.className =
-      "bg-[#595959] p-2 rounded-xl max-w-4/6 text-pretty text-white ";
-      
-    container.appendChild(send);
-    msg.current.appendChild(container);
-    scrollTop.current.scrollIntoView({ behavior: "smooth" });
+  // Send message function
+  const sendMessage = async () => {
+    if (!message.trim()) return;
+
+    try {
+      // Save message to backend
+      const response = await fetch("http://localhost:5000/chat/saveChats", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user1: currUser.username,
+          user2: chatFriend,
+          roomCode: roomCode,
+          message: message
+        })
+      });
+
+      if (response.ok) {
+        // Emit message via socket
+        socket.emit("sendMessage", { 
+          message, 
+          roomCode, 
+          sender: currUser.username 
+        });
+
+        // Add message to local chat state
+        setChats(prevChats => [...prevChats, {
+          sender: currUser.username,
+          message: message
+        }]);
+
+        // Clear message input
+        setMessage("");
+        scrollToBottom();
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   };
 
-  const selectedUser = (e) => {
+  // Select user to chat with
+  const selectedUser = async (e) => {
+    const selectedFriend = e.target.innerHTML;
+    setChatFriend(selectedFriend);
+
+    // Generate room code
     const roomString =
-      currUser.username < e.target.innerHTML
-        ? currUser.username + e.target.innerHTML
-        : e.target.innerHTML + currUser.username;
+      currUser.username < selectedFriend
+        ? currUser.username + selectedFriend
+        : selectedFriend + currUser.username;
 
     setRoomCode(roomString);
-    setChatFriend(e.target.innerHTML);
+
+    // Join room via socket
+    socket.emit("joinRoom", { roomCode: roomString });
+
+    // Fetch or create chat room and history
+    try {
+      const response = await fetch("http://localhost:5000/chat/getRoomCode", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: currUser.username,
+          friend: selectedFriend
+        })
+      });
+
+      const data = await response.json();
+      setRoomCode(data.roomCode);
+      
+      // Fetch chat history
+      await fetchChatHistory(data.roomCode);
+    } catch (error) {
+      console.error("Error selecting user:", error);
+    }
   };
 
   return (
@@ -118,7 +225,7 @@ function ChatRoom() {
                   className="flex items-center gap-3 cursor-pointer hover:bg-gray-700 p-2 rounded-xl"
                 >
                   <img
-                    src={`https://via.placeholder.com/40`} // Replace with friend's image if available
+                    src={friend.image}
                     alt={friend}
                     className="w-10 h-10 rounded-full"
                   />
@@ -133,7 +240,7 @@ function ChatRoom() {
         <div className="bg-[#1A2233] flex-grow rounded-lg flex flex-col p-4">
           <div className="flex items-center gap-4 mb-4">
             <img
-              src={`https://via.placeholder.com/40`} // Replace with chat friend's image
+              src={chatFriend.image}
               alt={chatFriend}
               className="w-10 h-10 rounded-full"
             />
@@ -141,7 +248,12 @@ function ChatRoom() {
               Chat with {chatFriend || "Select a Friend"}
             </h2>
           </div>
-          <div className="flex-grow overflow-y-auto max-h-[400px] space-y-4">
+          
+          {/* Messages Container */}
+          <div 
+            ref={messagesContainerRef} 
+            className="flex-grow overflow-y-auto max-h-[calc(100vh-400px)] space-y-4 p-4"
+          >
             {chats.map((chat, i) => (
               <div
                 key={i}
@@ -156,9 +268,11 @@ function ChatRoom() {
                 </div>
               </div>
             ))}
-            <div ref={scrollTop} />
+            <div ref={messagesEndRef} />
           </div>
-          <div className="mt-4 flex">
+          
+          {/* Message Input */}
+          <div className="mt-4 flex items-center">
             <input
               type="text"
               value={message}
