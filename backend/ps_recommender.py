@@ -173,6 +173,13 @@ class TeamRecommender:
         
     def format_recommendation(self, user: Dict, similarities: Dict) -> Dict:
         """Format user data and similarities for frontend display."""
+        
+        # Extract the necessary data from the user
+        hackathons_participated = user.get('hackathons_participated', 0)
+        achievements_count = user.get('achievements_count', 0)
+        total_repositories = user.get('total_repositories', 0)
+        total_contributions = user.get('total_contributions', 0)
+        
         return {
             "id": str(user['_id']),
             "cardContent": {
@@ -184,11 +191,11 @@ class TeamRecommender:
                 "body": {
                     "skills": list(filter(None, user.get('skills', []))),
                     "experience": {
-                        "hackathons": user.get('hackathonsParticipated', 0),
+                        "hackathons": hackathons_participated,
                         "githubStats": {
-                            "repos": user.get('githubRepos', 0),
-                            "contributions": user.get('githubContributions', 0),
-                            "achievements": user.get('githubAchievements', 0)
+                            "repos": total_repositories,
+                            "contributions": total_contributions,
+                            "achievements": achievements_count
                         }
                     }
                 },
@@ -202,6 +209,7 @@ class TeamRecommender:
                 }
             }
         }
+
     
     def get_recommendations(self, user_id: str, prob_statement: Optional[str] = None, limit: int = 6) -> Dict:
         """Get and format team recommendations with skill-based combinations."""

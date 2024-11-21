@@ -199,43 +199,6 @@ export default function PsRecommendation() {
                                     </div>
                                 </div>
                                 
-                                {/* Similarity Metrics */}
-                                <div className="pt-4 border-t border-gray-700">
-                                    <h5 className="text-sm font-semibold text-gray-400 mb-3">Similarity Metrics</h5>
-                                    <div className="space-y-3">
-                                        <div>
-                                            <div className="flex justify-between text-sm mb-1">
-                                                <span className="text-gray-300">Similar Skills</span>
-                                                <span className="text-gray-300">{rec.cardContent.footer.similarityMetrics?.skillMatch}</span>
-                                            </div>
-                                            <MetricBar percentage={rec.cardContent.footer.similarityMetrics?.skillMatch} color="bg-blue-500" />
-                                        </div>
-                                        
-                                        <div>
-                                            <div className="flex justify-between text-sm mb-1">
-                                                <span className="text-gray-300">Complementary Skills</span>
-                                                <span className="text-gray-300">{rec.cardContent.footer.similarityMetrics?.complementarySkills}</span>
-                                            </div>
-                                            <MetricBar percentage={rec.cardContent.footer.similarityMetrics?.complementarySkills} color="bg-purple-500" />
-                                        </div>
-                                        
-                                        <div>
-                                            <div className="flex justify-between text-sm mb-1">
-                                                <span className="text-gray-300">Experience Match</span>
-                                                <span className="text-gray-300">{rec.cardContent.footer.similarityMetrics?.experienceMatch}</span>
-                                            </div>
-                                            <MetricBar percentage={rec.cardContent.footer.similarityMetrics?.experienceMatch} color="bg-green-500" />
-                                        </div>
-                                        
-                                        <div>
-                                            <div className="flex justify-between text-sm mb-1">
-                                                <span className="text-gray-300">Repository Match</span>
-                                                <span className="text-gray-300">{rec.cardContent.footer.similarityMetrics?.repoMatch}</span>
-                                            </div>
-                                            <MetricBar percentage={rec.cardContent.footer.similarityMetrics?.repoMatch} color="bg-orange-500" />
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         ))}
                     </div>
