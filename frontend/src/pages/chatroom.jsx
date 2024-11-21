@@ -25,27 +25,38 @@ function ChatRoom() {
   // Fetch chat history for a specific room
   const fetchChatHistory = async (roomCode) => {
     try {
-      const jwt = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("LOGIN_INFO"))
-        ?.split("=")[1];
+        const jwt = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("LOGIN_INFO"))
+            ?.split("=")[1];
 
-      const response = await fetch(`http://localhost:5000/chat/getChats/${roomCode}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: jwt,
-        },
-      });
+        const response = await fetch(`http://localhost:5000/chat/getChats/${roomCode}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": jwt || "", // Ensure jwt is not undefined
+            },
+        });
 
-      if (response.ok) {
+        // Add more robust error checking
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("Response error:", errorText);
+            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        }
+
         const chatHistory = await response.json();
-        setChats(chatHistory);
-      }
+        console.log("Fetched chat history:", chatHistory); // Debugging log
+        
+        // Ensure chatHistory is an array
+        setChats(Array.isArray(chatHistory) ? chatHistory : []);
     } catch (error) {
-      console.error("Error fetching chat history:", error);
+        console.error("Error fetching chat history:", error);
+        
+        // Optionally set a default empty state
+        setChats([]);
     }
-  };
+};
 
   // Socket and initial setup
   useEffect(() => {
