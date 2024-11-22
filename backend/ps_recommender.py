@@ -211,7 +211,7 @@ class TeamRecommender:
         }
 
     
-    def get_recommendations(self, user_id: str, prob_statement: Optional[str] = None, limit: int = 6) -> Dict:
+    def get_recommendations(self, user_id: str, prob_statement: Optional[str] = None, limit: int = 9) -> Dict:
         """Get and format team recommendations with skill-based combinations."""
         try:
             # Get target user with potentially updated skills

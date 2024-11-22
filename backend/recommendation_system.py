@@ -169,7 +169,7 @@ class TeamRecommender:
             }
         }
 
-    def get_recommendations(self, user_id: str, limit: int = 6) -> Dict:
+    def get_recommendations(self, user_id: str, limit: int = 9) -> Dict:
         """Get and format team recommendations."""
         try:
             # Get target user
