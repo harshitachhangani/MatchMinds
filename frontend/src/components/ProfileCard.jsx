@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ProfilePic from "../assets/pfp.png";
 import { FiUserPlus } from "react-icons/fi";
-import { FaGithub } from "react-icons/fa";
+import { FaGithub, FaHammer } from "react-icons/fa";
 import { FiMessageCircle } from "react-icons/fi";
 import { FaTools, FaBriefcase } from 'react-icons/fa';
 
@@ -117,6 +117,27 @@ const ProfileCard = ({ user, currUser }) => {
                         </p>
                     </div>
                 </div>
+            </div>
+
+            {/* Hackathons Interested Section */}
+            <div className="mt-4">
+                <h4 className="text-lg font-semibold text-white mb-2 flex items-center">
+                    <FaHammer className="mr-2 text-blue-400" /> Hackathons Interested
+                </h4>
+                {user.hackathons_interested && user.hackathons_interested.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                        {user.hackathons_interested.map((hackathon, index) => (
+                            <span 
+                                key={index}
+                                className="bg-gray-600 text-blue-400 px-4 py-1 rounded-md text-sm hover:bg-green-600 hover:text-white transition-all"
+                            >
+                                {hackathon && hackathon.length > 15 ? `${hackathon.substring(0, 15)}...` : hackathon}
+                            </span>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-gray-400 text-sm">No hackathons interested yet</p>
+                )}
             </div>
 
             {/* Action Buttons */}

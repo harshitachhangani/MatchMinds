@@ -5,6 +5,7 @@ import { CiBookmarkPlus } from "react-icons/ci";
 import { FiSearch } from "react-icons/fi";
 import ProfileCard from "../components/ProfileCard";
 import { Link } from "react-router-dom";
+import { FaBookmark } from "react-icons/fa";
 
 export default function Dashboard() {
     const [hackathons, setHackathons] = useState([]);
@@ -12,6 +13,7 @@ export default function Dashboard() {
     const [allUsers, setAllUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [searchedUser, setSearchedUser] = useState("");
+    const [interestedHackathons, setInterestedHackathons] = useState([]);
 
     useEffect(() => {
         // Fetch current user data
@@ -31,6 +33,14 @@ export default function Dashboard() {
             .then((response) => response.json())
             .then((data) => setHackathons(data));
 
+        // Fetch user's interested hackathons
+        fetch("http://localhost:5000/userCRUD/getUserById/" + currUser.username)
+            .then((res) => res.json())
+            .then((userData) => {
+                setInterestedHackathons(userData.hackathons_interested || []);
+            })
+            .catch((err) => console.log(err));
+
         // Fetch all users
         fetch("http://localhost:5000/userCRUD/getUsers", {
             method: "GET",
@@ -46,17 +56,35 @@ export default function Dashboard() {
             .catch((err) => console.log(err));
     }, []);
 
+    // const addHackathonInterested = (e) => {
+    //     const currElement = e.target.parentElement.parentElement.children[0].innerText;
+
+    //     fetch("http://localhost:5000/hackathonsCRUD/updateHackathon", {
+    //         method: "POST",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //         },
+    //         body: JSON.stringify({
+    //             username: currUser.username,
+    //             hackName: currElement,
+    //         }),
+    //     })
+    //         .then((response) => response.json())
+    //         .then((data) => console.log(data))
+    //         .catch((error) => console.error("Error:", error));
+    // };
+
     const addHackathonInterested = (e) => {
         const currElement = e.target.parentElement.parentElement.children[0].innerText;
-
-        fetch("http://localhost:5000/hackathonsCRUD/updateHackathon", {
+    
+        fetch("http://localhost:5000/userCRUD/addHackathonInterested", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
                 username: currUser.username,
-                hackName: currElement,
+                hackathon: currElement,
             }),
         })
             .then((response) => response.json())
@@ -98,7 +126,11 @@ export default function Dashboard() {
                                         <h3 className="hover:text-green-900">{hackathon.name}</h3>
                                     </Link>
                                     <button onClick={addHackathonInterested}>
-                                        <CiBookmarkPlus size={20} />
+                                        {interestedHackathons.includes(hackathon.name) ? (
+                                            <FaBookmark size={20} className="text-white" />
+                                        ) : (
+                                            <CiBookmarkPlus size={20} />
+                                        )}
                                     </button>
                                 </div>
                             </div>

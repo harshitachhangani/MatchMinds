@@ -231,4 +231,29 @@ router.patch("/deleteDuplicate", async (req, res) => {
   }
 });
 
+router.post("/addHackathonInterested", async (req, res) => {
+  try {
+      const { username, hackathon } = req.body;
+
+      const user = await AllUsers.findOne({ username: username });
+      
+      if (user) {
+          if (user.hackathons_interested.includes(hackathon)) {
+              res.status(400).json({ error: "Hackathon already marked as interested" });
+          } else {
+              user.hackathons_interested.push(hackathon);
+              await user.save();
+              res.status(200).json({ message: "Hackathon added to interested list" });
+          }
+      } else {
+          res.status(400).json({ error: "User not found" });
+      }
+  } catch (error) {
+      console.log(error);
+      res.status(400).json({ error: "server side error" });
+  }
+});
+
+
+
 module.exports = router;

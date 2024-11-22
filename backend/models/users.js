@@ -40,7 +40,8 @@ const userSchema = new mongoose.Schema({
     achievements_count: {  // New field
         type: Number,
         default: 0
-    }
+    },
+    hackathons_interested: [String]
 });
 
 userSchema.pre('save', async function(next) {
