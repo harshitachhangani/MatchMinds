@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Loader2, Github, Award, Code, Users } from "lucide-react";
 import Navbar from "../components/Navbar";
+import { FiUserPlus } from "react-icons/fi";
+import { FaGithub } from "react-icons/fa";
 
 export default function RecommendationsPage() {
     const [problemStatement, setProblemStatement] = useState("");
@@ -74,6 +76,48 @@ export default function RecommendationsPage() {
             fetchRecommendations();
         }
     };
+
+    const addFriend = async (friendUsername) => {
+        try {
+            console.log("Attempting to add friend:", friendUsername);
+            console.log("Current user:", currUser.username);
+    
+            const token = document.cookie
+                .split("; ")
+                .find((row) => row.startsWith("LOGIN_INFO"))
+                ?.split("=")[1];
+    
+            if (!token) {
+                throw new Error("Not authenticated");
+            }
+    
+            // Send a request to add the friend
+            const res = await fetch('http://localhost:5000/userCRUD/addFriend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: token, // Use the auth token
+                },
+                body: JSON.stringify({
+                    username: currUser.username,
+                    friend: friendUsername, // Pass the friend's username
+                }),
+            });
+    
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || "Failed to add friend");
+            }
+    
+            const data = await res.json();
+            console.log("Friend added:", data);
+            alert("Friend added successfully!");
+        } catch (err) {
+            console.error("Error adding friend:", err);
+            alert(err.message); // Show error message
+        }
+    };
+    
 
     const MetricBar = ({ percentage, color = "bg-blue-500" }) => {
         const width = parseFloat(percentage) || 0;
@@ -235,6 +279,16 @@ export default function RecommendationsPage() {
                                             <MetricBar percentage={rec.cardContent.footer.similarityMetrics?.repoMatch} color="bg-orange-500" />
                                         </div>
                                     </div>
+                                </div>
+
+                                {/* Action Buttons */}
+                                <div className="mt-4 flex justify-evenly w-full">
+                                    <button className="hover:bg-blue-200 text-white rounded-full p-2 flex items-center text-lg" onClick={() => addFriend(rec.cardContent.header.username)}>
+                                        <FiUserPlus className="text-2xl" />
+                                    </button>
+                                    <a href={`https://github.com/${rec.cardContent.body.experience.githubStats.github_username}`} target="_blank" rel="noopener noreferrer" className="hover:bg-blue-200 text-white rounded-full p-2 flex items-center text-lg">
+                                        <FaGithub className="text-2xl" />
+                                    </a>
                                 </div>
                             </div>
                         ))}

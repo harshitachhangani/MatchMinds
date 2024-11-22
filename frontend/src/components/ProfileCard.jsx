@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import ProfilePic from "../assets/pfp.png";
 import { FiUserPlus } from "react-icons/fi";
-import { FaLinkedin, FaGithub } from "react-icons/fa";
-import { CiTwitter } from "react-icons/ci";
+import { FaGithub } from "react-icons/fa";
 import { FiMessageCircle } from "react-icons/fi";
 import { FaTools, FaBriefcase } from 'react-icons/fa';
 
