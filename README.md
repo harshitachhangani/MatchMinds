@@ -1,70 +1,153 @@
-# Match Maker
+# MatchMinds: Hackathon Teammate Recommendation Platform 🚀
 
-Welcome to MatchMinds  - Your Ultimate Hackathon Team Formation Platform!
+## Overview
 
-## Introduction
+MatchMinds is an innovative platform designed to revolutionize team formation for hackathons and competitions by leveraging advanced machine learning and collaborative filtering algorithms. Our mission is to connect talented individuals with complementary skills, fostering diverse and high-performing teams.
 
-Match Maker is a web-based platform designed to simplify and enhance the hackathon experience by facilitating efficient team formation. Our platform utilizes advanced matchmaking algorithms to connect participants with compatible teammates based on their skills, interests, and project preferences.
+## 🌟 Key Features
 
-## Features
+### 1. Intelligent Teammate Matching
+- Advanced ML-based recommendation system
+- Skill compatibility analysis
+- Personalized team formation suggestions
 
-- **Efficient Team Formation:** Match Maker streamlines the team formation process, saving participants time and effort.
-- **Advanced Matchmaking Algorithm:** Our sophisticated algorithm analyzes user profiles to suggest compatible teams, ensuring optimal team composition.
-- **Comprehensive Hackathon Database:** Match Maker integrates a vast database of hackathon events, allowing users to discover and participate in hackathons worldwide.
-- **Personalized User Experience:** We tailor the user experience based on individual preferences, providing personalized recommendations and a more engaging platform interaction.
-- **Time Management Tools:** Match Maker includes time management features such as reminders, deadlines, and task tracking, enabling teams to effectively manage their time during hackathon events.
+### 2. Comprehensive User Profiles
+- Detailed skill assessment
+- Experience tracking
+- Portfolio integration
+- Hackathon history visualization
 
-## Usage
+### 3. Smart Search & Filtering
+- Technology-specific searches
+- Role-based matching
+- Skill level filtering
 
-1. Register and create a profile on Match Maker.
-2. Select your skills, interests, and project preferences.
-3. Explore team recommendations and connect with compatible teammates.
-4. Collaborate with your team using built-in communication tools and project management features.
+### 4. Collaboration Tools
+- Team chat
+- Project management
+- Meeting schedulers
+- Real-time communication
 
-## Contributing
+## 🛠 Tech Stack
 
-We welcome contributions from the community! To contribute to Match Maker, please follow these steps:
+### Frontend
+- React.js 
+- Tailwind CSS
+- Redux Toolkit
 
-1. Fork the repository.
-2. Create a new branch: `git checkout -b feature-name`.
-3. Make your changes and commit them: `git commit -m 'Add new feature'`.
-4. Push to the branch: `git push origin feature-name`.
-5. Submit a pull request.
+### Backend
+- Node.js with Express.js
+- MongoDB
+- JWT Authentication
 
-## License
+### Machine Learning
+- Python
+- Content Based Filtering
+- Cosine Similarity
+- Jaccard Similarity
+- Graph Neural Networks
 
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+## 🚀 Getting Started
 
+### Prerequisites
+- Node.js (v18+)
+- Python (3.9+)
+- MongoDB
 
+### Installation
 
-      .-"-.            .-"-.            .-"-.           .-"-.
-     _/_-.-_\_        _/.-.-.\_        _/.-.-.\_       _/.-.-.\_
-    / __} {__ \      /|( o o )|\      ( ( o o ) )     ( ( o o ) )
-   / //  "  \\ \    | //  "  \\ |      |/  "  \|       |/  "  \|
-  / / \'---'/ \ \  / / \'---'/ \ \      \'/^\'/         \ .-. /
-  \ \_/`"""`\_/ /  \ \_/`"""`\_/ /      /`\ /`\         /`"""`\
-   \           /    \           /      /  /|\  \       /       \
+1. Clone the repository
+```bash
+git clone https://github.com/your-username/hackbuddy.git
+cd hackbuddy
+```
 
--={ see no evil }={ hear no evil }={ speak no evil }={ have no fun }=-
+2. Install Frontend Dependencies
+```bash
+cd frontend
+npm install
+```
 
-👉🏿👇🏿👇🏿👇🏿👇🏿👇🏿👇🏿👇🏿👇🏿👇🏿👈🏿
+3. Install Backend Dependencies
+```bash
+cd ../backend
+npm install
+```
 
-👉🏿👇🏾👇🏾👇🏾👇🏾👇🏾👇🏾👇🏾👇🏾👇🏾👈🏿
+4. Install ML Service Dependencies
+```bash
+cd ../ml-service
+pip install -r requirements.txt
+```
 
-👉🏿👉🏾👇🏽👇🏽👇🏽👇🏽👇🏽👇🏽👇🏽👈🏾👈🏿
+5. Set Up Environment Variables
+- Create `.env` files in frontend, backend, and ml-service directories
+- Add necessary configuration (MongoDB Atlas URL, Secret keys, Github Token and Gemini API Key)
 
-👉🏿👉🏾👉🏽👇🏼👇🏼👇🏼👇🏼👇🏼👈🏽👈🏾👈🏿
+### Running the Application
 
-👉🏿👉🏾👉🏽👉🏼👇🏻👇🏻👇🏻👈🏼👈🏽👈🏾👈🏿
+1. Start Backend Service
+```bash
+cd backend
+npm start
+```
 
-👉🏿👉🏾👉🏽👉🏼👉🏻 ඞ 👈🏻👈🏼👈🏽👈🏾👈🏿
+2. Start Frontend
+```bash
+cd frontend
+npm run dev
+```
 
-👉🏿👉🏾👉🏽👉🏼👆🏻👆🏻👆🏻👈🏼👈🏽👈🏾👈🏿
+## 📊 Core Recommendation Algorithm
 
-👉🏿👉🏾👉🏽👆🏼👆🏼👆🏼👆🏼👆🏼👈🏽👈🏾👈🏿
+MatchMinds uses a multi-factor recommendation system analyzing:
+- Skill Compatibility (30%)
+- Technology Expertise (20%)
+- Experience Level (15%)
+- Collaboration History (15%)
+- User Ratings (10%)
+- Role Expertise (5%)
+- Project Success Rates (5%)
 
-👉🏿👉🏾👆🏽👆🏽👆🏽👆🏽👆🏽👆🏽👆🏽👈🏾👈🏿
+## 🔒 Security Features
+- JWT Authentication
+- Role-Based Access Control
+- Data Encryption
+- Secure API Endpoints
 
-👉🏿👆🏾👆🏾👆🏾👆🏾👆🏾👆🏾👆🏾👆🏾👆🏾👈🏿
+## 📈 Development Roadmap
 
-👉🏿👆🏿👆🏿👆🏿👆🏿👆🏿👆🏿👆🏿👆🏿👆🏿👈🏿
+### Phase 1: MVP (2-3 months)
+- User Registration
+- Basic Profile Creation
+- Simple Matchmaking
+
+### Phase 2: Enhanced Features (2-3 months)
+- Advanced ML Matching
+- Real-time Communication
+- Skill Verification
+
+### Phase 3: Scale & Optimize (2-3 months)
+- Performance Optimization
+- Advanced Analytics
+- Enhanced Security
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## 🙌 Acknowledgements
+- Open Source Community
+- Machine Learning Researchers
+- Hackathon Organizers
+
+---
+
+**Built with ❤️ for Hackathon Enthusiasts**
