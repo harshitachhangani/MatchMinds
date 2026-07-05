@@ -5,7 +5,7 @@ class PythonBridge {
     constructor() {
         // Change this to 'python' instead of 'python3' for Windows
         this.pythonPath = 'python';
-        this.scriptPath = path.join(__dirname, 'teammate-recommender.py');
+        this.scriptPath = path.join(__dirname, 'ps_recommender.py');
     }
 
     async getRecommendations(userId) {

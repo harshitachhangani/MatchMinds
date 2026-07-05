@@ -219,13 +219,13 @@ export default function RecommendationsPage() {
                                             <MetricBar percentage={rec.cardContent.footer.similarityMetrics?.complementarySkills} color="bg-purple-500" />
                                         </div>
                                         
-                                        <div>
+                                        {/* <div>
                                             <div className="flex justify-between text-sm mb-1">
                                                 <span className="text-gray-300">Experience Match</span>
                                                 <span className="text-gray-300">{rec.cardContent.footer.similarityMetrics?.experienceMatch}</span>
                                             </div>
                                             <MetricBar percentage={rec.cardContent.footer.similarityMetrics?.experienceMatch} color="bg-green-500" />
-                                        </div>
+                                        </div> */}
                                         
                                         <div>
                                             <div className="flex justify-between text-sm mb-1">
